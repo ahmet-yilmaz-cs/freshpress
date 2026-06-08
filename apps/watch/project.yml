@@ -1,0 +1,27 @@
+# XcodeGen spec — run `xcodegen generate` in this folder to produce FreshPressWatch.xcodeproj
+# (install with: brew install xcodegen)
+name: FreshPressWatch
+options:
+  bundleIdPrefix: com.freshpress
+  deploymentTarget:
+    watchOS: "10.0"
+targets:
+  FreshPressWatch:
+    type: application
+    platform: watchOS
+    sources:
+      - FreshPressWatch
+    info:
+      path: FreshPressWatch/Info.plist
+      properties:
+        CFBundleDisplayName: FreshPress
+        WKApplication: true
+        WKWatchOnly: true
+        UILaunchScreen: {}
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.freshpress.watch
+        GENERATE_INFOPLIST_FILE: false
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        CURRENT_PROJECT_VERSION: 1
+        MARKETING_VERSION: 1.0.0

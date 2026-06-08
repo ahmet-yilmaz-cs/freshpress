@@ -1,0 +1,71 @@
+{
+  "buildCommand" : {
+    "command" : "build",
+    "skipDependencies" : false,
+    "style" : "buildOnly"
+  },
+  "configuredTargets" : [
+    {
+      "guid" : "64a984a3ff21c300d6e2b2c2ffe032cd9923cea0a0d1eff2d4212e897d5b40f6"
+    }
+  ],
+  "containerPath" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/FreshPressWatch.xcodeproj",
+  "continueBuildingAfterErrors" : false,
+  "dependencyScope" : "workspace",
+  "enableIndexBuildArena" : false,
+  "hideShellScriptEnvironment" : false,
+  "parameters" : {
+    "action" : "build",
+    "activeArchitecture" : "arm64",
+    "activeRunDestination" : {
+      "disableOnlyActiveArch" : false,
+      "hostTargetedPlatform" : null,
+      "platform" : "iphonesimulator",
+      "sdk" : "iphonesimulator26.5",
+      "sdkVariant" : "iphonesimulator",
+      "supportedArchitectures" : [
+        "arm64"
+      ],
+      "targetArchitecture" : "arm64"
+    },
+    "arenaInfo" : {
+      "buildIntermediatesPath" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex",
+      "buildProductsPath" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Products",
+      "derivedDataPath" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build",
+      "indexDataStoreFolderPath" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Index.noindex/DataStore",
+      "indexEnableDataStore" : true,
+      "indexPCHPath" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Index.noindex/PrecompiledHeaders",
+      "pchPath" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/PrecompiledHeaders"
+    },
+    "configurationName" : "Debug",
+    "overrides" : {
+      "commandLine" : {
+        "table" : {
+
+        }
+      },
+      "synthesized" : {
+        "table" : {
+          "ACTION" : "build",
+          "ASSETCATALOG_FILTER_FOR_DEVICE_MODEL" : "iPhone18,2",
+          "ASSETCATALOG_FILTER_FOR_DEVICE_OS_VERSION" : "26.5",
+          "ASSETCATALOG_FILTER_FOR_THINNING_DEVICE_CONFIGURATION" : "iPhone18,2",
+          "BUILD_ACTIVE_RESOURCES_ONLY" : "YES",
+          "ENABLE_PREVIEWS" : "NO",
+          "ENABLE_XOJIT_PREVIEWS" : "YES",
+          "ONLY_ACTIVE_ARCH" : "YES",
+          "TARGET_DEVICE_IDENTIFIER" : "0CB01776-36BD-48DD-8A54-3282FFD85308",
+          "TARGET_DEVICE_MODEL" : "iPhone18,2",
+          "TARGET_DEVICE_OS_VERSION" : "26.5",
+          "TARGET_DEVICE_PLATFORM_NAME" : "iphonesimulator"
+        }
+      }
+    }
+  },
+  "schemeCommand" : "launch",
+  "showNonLoggedProgress" : true,
+  "useDryRun" : false,
+  "useImplicitDependencies" : true,
+  "useLegacyBuildLocations" : false,
+  "useParallelTargets" : true
+}

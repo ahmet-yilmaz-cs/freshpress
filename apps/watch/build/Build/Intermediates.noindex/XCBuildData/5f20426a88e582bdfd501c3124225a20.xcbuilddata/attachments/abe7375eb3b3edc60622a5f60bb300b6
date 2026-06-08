@@ -1,0 +1,119 @@
+{
+  "" : {
+    "diagnostics" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/FreshPressWatch-primary.dia",
+    "emit-module-dependencies" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/FreshPressWatch-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/FreshPressWatch-primary-emit-module.dia",
+    "pch" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/FreshPressWatch-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/FreshPressWatch-primary.swiftdeps"
+  },
+  "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/FreshPressWatch/FreshPressWatchApp.swift" : {
+    "const-values" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/FreshPressWatchApp.swiftconstvalues",
+    "dependencies" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/FreshPressWatchApp.d",
+    "diagnostics" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/FreshPressWatchApp.dia",
+    "index-unit-output-path" : "/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/FreshPressWatchApp.o",
+    "llvm-bc" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/FreshPressWatchApp.bc",
+    "object" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/FreshPressWatchApp.o",
+    "swift-dependencies" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/FreshPressWatchApp.swiftdeps",
+    "swiftmodule" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/FreshPressWatchApp~partial.swiftmodule"
+  },
+  "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/FreshPressWatch/Models.swift" : {
+    "const-values" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/Models.swiftconstvalues",
+    "dependencies" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/Models.d",
+    "diagnostics" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/Models.dia",
+    "index-unit-output-path" : "/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/Models.o",
+    "llvm-bc" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/Models.bc",
+    "object" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/Models.o",
+    "swift-dependencies" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/Models.swiftdeps",
+    "swiftmodule" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/Models~partial.swiftmodule"
+  },
+  "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/FreshPressWatch/Theme.swift" : {
+    "const-values" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/Theme.swiftconstvalues",
+    "dependencies" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/Theme.d",
+    "diagnostics" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/Theme.dia",
+    "index-unit-output-path" : "/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/Theme.o",
+    "llvm-bc" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/Theme.bc",
+    "object" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/Theme.o",
+    "swift-dependencies" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/Theme.swiftdeps",
+    "swiftmodule" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/Theme~partial.swiftmodule"
+  },
+  "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/FreshPressWatch/Views/Components.swift" : {
+    "const-values" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/Components.swiftconstvalues",
+    "dependencies" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/Components.d",
+    "diagnostics" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/Components.dia",
+    "index-unit-output-path" : "/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/Components.o",
+    "llvm-bc" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/Components.bc",
+    "object" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/Components.o",
+    "swift-dependencies" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/Components.swiftdeps",
+    "swiftmodule" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/Components~partial.swiftmodule"
+  },
+  "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/FreshPressWatch/Views/ConnectionViews.swift" : {
+    "const-values" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/ConnectionViews.swiftconstvalues",
+    "dependencies" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/ConnectionViews.d",
+    "diagnostics" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/ConnectionViews.dia",
+    "index-unit-output-path" : "/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/ConnectionViews.o",
+    "llvm-bc" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/ConnectionViews.bc",
+    "object" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/ConnectionViews.o",
+    "swift-dependencies" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/ConnectionViews.swiftdeps",
+    "swiftmodule" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/ConnectionViews~partial.swiftmodule"
+  },
+  "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/FreshPressWatch/Views/HistoryNotificationsViews.swift" : {
+    "const-values" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/HistoryNotificationsViews.swiftconstvalues",
+    "dependencies" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/HistoryNotificationsViews.d",
+    "diagnostics" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/HistoryNotificationsViews.dia",
+    "index-unit-output-path" : "/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/HistoryNotificationsViews.o",
+    "llvm-bc" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/HistoryNotificationsViews.bc",
+    "object" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/HistoryNotificationsViews.o",
+    "swift-dependencies" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/HistoryNotificationsViews.swiftdeps",
+    "swiftmodule" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/HistoryNotificationsViews~partial.swiftmodule"
+  },
+  "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/FreshPressWatch/Views/HomeView.swift" : {
+    "const-values" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/HomeView.swiftconstvalues",
+    "dependencies" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/HomeView.d",
+    "diagnostics" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/HomeView.dia",
+    "index-unit-output-path" : "/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/HomeView.o",
+    "llvm-bc" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/HomeView.bc",
+    "object" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/HomeView.o",
+    "swift-dependencies" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/HomeView.swiftdeps",
+    "swiftmodule" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/HomeView~partial.swiftmodule"
+  },
+  "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/FreshPressWatch/Views/JuicingFlowViews.swift" : {
+    "const-values" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/JuicingFlowViews.swiftconstvalues",
+    "dependencies" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/JuicingFlowViews.d",
+    "diagnostics" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/JuicingFlowViews.dia",
+    "index-unit-output-path" : "/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/JuicingFlowViews.o",
+    "llvm-bc" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/JuicingFlowViews.bc",
+    "object" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/JuicingFlowViews.o",
+    "swift-dependencies" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/JuicingFlowViews.swiftdeps",
+    "swiftmodule" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/JuicingFlowViews~partial.swiftmodule"
+  },
+  "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/FreshPressWatch/Views/OnboardingLoginViews.swift" : {
+    "const-values" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/OnboardingLoginViews.swiftconstvalues",
+    "dependencies" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/OnboardingLoginViews.d",
+    "diagnostics" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/OnboardingLoginViews.dia",
+    "index-unit-output-path" : "/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/OnboardingLoginViews.o",
+    "llvm-bc" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/OnboardingLoginViews.bc",
+    "object" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/OnboardingLoginViews.o",
+    "swift-dependencies" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/OnboardingLoginViews.swiftdeps",
+    "swiftmodule" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/OnboardingLoginViews~partial.swiftmodule"
+  },
+  "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/FreshPressWatch/Views/SettingsViews.swift" : {
+    "const-values" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/SettingsViews.swiftconstvalues",
+    "dependencies" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/SettingsViews.d",
+    "diagnostics" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/SettingsViews.dia",
+    "index-unit-output-path" : "/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/SettingsViews.o",
+    "llvm-bc" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/SettingsViews.bc",
+    "object" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/SettingsViews.o",
+    "swift-dependencies" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/SettingsViews.swiftdeps",
+    "swiftmodule" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/SettingsViews~partial.swiftmodule"
+  },
+  "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/GeneratedAssetSymbols.dia",
+    "index-unit-output-path" : "/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftdeps",
+    "swiftmodule" : "/Users/erdem/Documents/iyte/hci/freshpress/implementation/apps/watch/build/Build/Intermediates.noindex/FreshPressWatch.build/Debug-watchsimulator/FreshPressWatch.build/Objects-normal/arm64/GeneratedAssetSymbols~partial.swiftmodule"
+  }
+}

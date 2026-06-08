@@ -1,0 +1,30 @@
+{
+  "name": "freshpress",
+  "private": true,
+  "version": "1.0.0",
+  "packageManager": "pnpm@11.1.2",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "mobile": "pnpm --filter @freshpress/mobile run ios",
+    "mobile:start": "pnpm --filter @freshpress/mobile run start",
+    "ios": "pnpm --filter @freshpress/mobile run ios",
+    "android": "pnpm --filter @freshpress/mobile run android",
+    "web": "pnpm --filter @freshpress/mobile run web",
+    "watch": "bash apps/watch/run.sh",
+    "api": "pnpm --filter @freshpress/api run dev",
+    "typecheck": "pnpm -r run typecheck",
+    "lint": "pnpm -r run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\""
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3",
+    "typescript": "^5.6.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "react-native-css-interop": "0.1.22"
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "FreshPress",
+    "slug": "freshpress",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "freshpress",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#f9f9f9"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.freshpress.app"
+    },
+    "android": {
+      "package": "com.freshpress.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ff8200"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "plugins": ["expo-router", "expo-secure-store", "expo-font"],
+    "experiments": {
+      "typedRoutes": true,
+      "tsconfigPaths": true
+    },
+    "extra": {
+      "apiUrl": "http://localhost:5050"
+    }
+  }
+}

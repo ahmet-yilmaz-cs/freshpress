@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ESNext", "DOM"],
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "baseUrl": ".",
+    "paths": {
+      "@freshpress/types": ["packages/types/src/index.ts"],
+      "@freshpress/data": ["packages/data/src/index.ts"],
+      "@freshpress/utils": ["packages/utils/src/index.ts"],
+      "@freshpress/validation": ["packages/validation/src/index.ts"],
+      "@freshpress/config": ["packages/config/src/index.ts"],
+      "@freshpress/design-system": ["packages/design-system/src/index.ts"]
+    }
+  }
+}

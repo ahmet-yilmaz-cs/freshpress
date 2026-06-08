@@ -1,0 +1,9 @@
+{
+  "name": "@freshpress/api",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "bash run.sh",
+    "typecheck": "echo \"(python service — no ts typecheck)\""
+  }
+}

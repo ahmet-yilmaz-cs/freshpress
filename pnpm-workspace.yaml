@@ -1,0 +1,7 @@
+# pnpm 11 reads workspace-level settings from here (not just .npmrc).
+# A hoisted (flat) node_modules keeps Expo/Metro resolution simple.
+nodeLinker: hoisted
+shamefullyHoist: true
+packages:
+  - "apps/*"
+  - "packages/*"

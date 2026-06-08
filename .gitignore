@@ -1,0 +1,38 @@
+# deps
+node_modules/
+.pnpm-store/
+
+# expo
+.expo/
+dist/
+web-build/
+*.orig.*
+ios/
+android/
+
+# native
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# python / flask
+apps/api/.venv/
+apps/api/__pycache__/
+**/__pycache__/
+*.pyc
+apps/api/instance/
+apps/api/*.db
+apps/api/freshpress.db
+
+# env
+.env
+.env.local
+*.local
+
+# misc
+.DS_Store
+*.log
+.turbo/
+coverage/
