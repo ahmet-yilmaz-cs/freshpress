@@ -1,110 +1,110 @@
 import { useRouter } from 'expo-router';
 import {
   Bell,
-  ChevronRight,
-  Lightbulb,
-  Package,
+  CircleHelp,
+  LogOut,
   Settings,
+  ShieldCheck,
   Smartphone,
   Target,
 } from 'lucide-react-native';
-import { Image, Pressable, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
+
+import { colors } from '@freshpress/design-system';
 
 import { useAuth } from '../../src/auth/AuthContext';
+import { AppHeader } from '../../src/components/AppHeader';
+import { ListRow, MetricCard, SectionHeader } from '../../src/components/FreshPressPrimitives';
 import { Button, Card, Screen, Text } from '../../src/components/ui';
+import { t } from '../../src/i18n/strings';
+import { appRoute } from '../../src/lib/route';
 
-type Row = { icon: React.ReactNode; label: string; onPress: () => void };
-
-/** Profile / Profil — account header, settings rows, links (6:692). */
 export default function Profile() {
   const { user, logout } = useAuth();
   const router = useRouter();
 
-  const rows: Row[] = [
-    {
-      icon: <Settings size={20} color="#574235" />,
-      label: 'Settings',
-      onPress: () => router.push('/settings'),
-    },
-    {
-      icon: <Smartphone size={20} color="#574235" />,
-      label: 'Device Pairing',
-      onPress: () => router.push('/pairing'),
-    },
-    {
-      icon: <Bell size={20} color="#574235" />,
-      label: 'Notifications',
-      onPress: () => router.push('/notifications'),
-    },
-    {
-      icon: <Target size={20} color="#574235" />,
-      label: 'Goals',
-      onPress: () => router.push('/(tabs)/goals'),
-    },
-    {
-      icon: <Lightbulb size={20} color="#574235" />,
-      label: 'Recommendations',
-      onPress: () => router.push('/recommendations'),
-    },
-    {
-      icon: <Package size={20} color="#574235" />,
-      label: 'Stock',
-      onPress: () => router.push('/stock'),
-    },
-  ];
-
   return (
-    <Screen edges={['top']} className="px-5">
-      <Text variant="display" className="py-4">
-        Profile
-      </Text>
+    <Screen edges={['top']}>
+      <AppHeader title={t.profile.title} subtitle={t.profile.subtitle} compact />
+
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ gap: 16, paddingBottom: 24 }}
+        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24, gap: 16 }}
       >
         <Card className="flex-row items-center gap-4">
-          <Avatar name={user?.name} avatarUrl={user?.avatarUrl} />
-          <View className="flex-1">
-            <Text variant="h3">{user?.name ?? 'Guest'}</Text>
-            <Text variant="body" className="text-[14px]">
+          <View className="h-16 w-16 items-center justify-center rounded-full border border-border-warm bg-track">
+            <Text variant="h2" className="text-amber">
+              {(user?.name?.[0] ?? 'F').toUpperCase()}
+            </Text>
+          </View>
+          <View className="min-w-0 flex-1">
+            <Text variant="h3" numberOfLines={1}>
+              {user?.name ?? t.profile.guest}
+            </Text>
+            <Text variant="body" className="text-[14px]" numberOfLines={1}>
               {user?.email ?? '—'}
             </Text>
           </View>
         </Card>
 
+        <View className="flex-row gap-3">
+          <MetricCard
+            label={t.profile.plan}
+            value={t.profile.planValue}
+            icon={<ShieldCheck size={16} color={colors.muted} />}
+            tone="green"
+          />
+          <MetricCard
+            label={t.profile.goal}
+            value={t.profile.goalValue}
+            icon={<Target size={16} color={colors.muted} />}
+            tone="subtle"
+          />
+        </View>
+
+        <SectionHeader title={t.profile.manage} />
         <Card className="gap-0 p-0">
-          {rows.map((row, i) => (
-            <Pressable
-              key={row.label}
-              onPress={row.onPress}
-              className={`flex-row items-center gap-3 px-5 py-4 active:opacity-70 ${
-                i < rows.length - 1 ? 'border-b border-hairline' : ''
-              }`}
-            >
-              {row.icon}
-              <Text variant="body" className="flex-1 text-ink">
-                {row.label}
-              </Text>
-              <ChevronRight size={18} color="#574235" />
-            </Pressable>
-          ))}
+          <ListRow
+            title={t.profile.account}
+            subtitle={t.profile.accountSub}
+            icon={<ShieldCheck size={20} color={colors.amber} />}
+            onPress={() => router.push(appRoute('/account'))}
+          />
+          <ListRow
+            title={t.profile.connection}
+            subtitle={t.profile.connectionSub}
+            icon={<Smartphone size={20} color={colors.amber} />}
+            onPress={() => router.push('/pairing')}
+          />
+          <ListRow
+            title={t.profile.notifications}
+            subtitle={t.profile.notificationsSub}
+            icon={<Bell size={20} color={colors.amber} />}
+            onPress={() => router.push('/notifications')}
+          />
+          <ListRow
+            title={t.profile.settings}
+            subtitle={t.profile.settingsSub}
+            icon={<Settings size={20} color={colors.amber} />}
+            onPress={() => router.push('/settings')}
+          />
+          <ListRow
+            title={t.profile.help}
+            subtitle={t.profile.helpSub}
+            icon={<CircleHelp size={20} color={colors.amber} />}
+            onPress={() => router.push(appRoute('/help'))}
+            last
+          />
         </Card>
 
-        <Button title="Log Out" variant="secondary" onPress={logout} className="mt-2" />
+        <Button title={t.profile.logout} variant="secondary" onPress={logout} className="mt-2" />
+        <View className="flex-row items-center justify-center gap-2">
+          <LogOut size={14} color={colors.muted} />
+          <Text variant="caption" className="text-center tracking-normal">
+            {t.profile.footer}
+          </Text>
+        </View>
       </ScrollView>
     </Screen>
-  );
-}
-
-function Avatar({ name, avatarUrl }: { name?: string; avatarUrl?: string }) {
-  if (avatarUrl) {
-    return <Image source={{ uri: avatarUrl }} className="h-16 w-16 rounded-full" />;
-  }
-  return (
-    <View className="h-16 w-16 items-center justify-center rounded-full border border-border-warm bg-track">
-      <Text variant="h2" className="text-amber">
-        {(name?.[0] ?? 'F').toUpperCase()}
-      </Text>
-    </View>
   );
 }

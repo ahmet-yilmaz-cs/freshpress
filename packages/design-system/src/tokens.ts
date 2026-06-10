@@ -25,6 +25,8 @@ export const colors = {
   track: '#e2e2e2', // slider track / avatar bg
   border: '#eeeeee', // hairline border
   borderWarm: '#dec1af', // warm border
+  danger: '#d23b30',
+  dangerSoft: '#ffe9e5',
 
   white: '#ffffff',
   black: '#000000',
@@ -49,7 +51,7 @@ export const spacing = {
 
 /** Type scale — name: [fontSize, lineHeight, weight, letterSpacing] */
 export const typography = {
-  display: { fontSize: 40, lineHeight: 48, weight: '800', letterSpacing: -1 },
+  display: { fontSize: 40, lineHeight: 48, weight: '800', letterSpacing: 0 },
   h2: { fontSize: 32, lineHeight: 40, weight: '700', letterSpacing: 0 },
   h3: { fontSize: 20, lineHeight: 28, weight: '600', letterSpacing: 0 },
   body: { fontSize: 16, lineHeight: 24, weight: '400', letterSpacing: 0 },

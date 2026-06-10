@@ -6,32 +6,35 @@ struct SettingsView: View {
     @Binding var path: NavigationPath
 
     var body: some View {
-        ScrollView {
+        WatchScreen(title: store.t("settings")) {
             VStack(spacing: 6) {
-                SectionHeader(title: "GENEL")
+                SectionHeader(title: store.upper("general"))
                 Button { path.append(Route.connection) } label: {
-                    SettingRow(dot: Theme.green, title: "Bluetooth", value: store.deviceName)
+                    SettingRow(dot: store.connectionAccent.color, title: store.t("bluetooth"), value: store.connectionSummary)
                 }.buttonStyle(.plain)
                 Button { path.append(Route.notificationSettings) } label: {
-                    SettingRow(dot: Theme.yellow, title: "Bildirimler", value: "Açık")
+                    SettingRow(dot: Theme.yellow, title: store.t("notifications"), value: store.notificationSummary)
                 }.buttonStyle(.plain)
                 Button { path.append(Route.soundSettings) } label: {
-                    SettingRow(dot: Theme.blue, title: "Sıkım Sesi", value: "Açık")
+                    SettingRow(dot: Theme.blue, title: store.t("sound"), value: store.soundSummary)
                 }.buttonStyle(.plain)
 
-                SectionHeader(title: "DİĞER")
+                SectionHeader(title: store.upper("other"))
                 Button { path.append(Route.language) } label: {
-                    SettingRow(dot: Theme.orange, title: "Dil", value: store.selectedLanguageName)
+                    SettingRow(dot: Theme.orange, title: store.t("language"), value: store.selectedLanguageName)
                 }.buttonStyle(.plain)
                 Button { path.append(Route.about) } label: {
-                    SettingRow(dot: Theme.textSecondary, title: "Hakkında", value: "Sürüm 1.2.0")
+                    SettingRow(dot: Theme.textSecondary, title: store.t("about"), value: "\(store.t("version")) 1.2.0")
                 }.buttonStyle(.plain)
+                Button {
+                    path = NavigationPath()
+                    store.signOut()
+                } label: {
+                    SettingRow(dot: Theme.red, title: store.t("logout"), value: store.userName, showChevron: false)
+                }
+                .buttonStyle(.plain)
             }
-            .padding(.horizontal, 10)
         }
-        .background(Theme.bg)
-        .navigationTitle("Ayarlar")
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
@@ -40,22 +43,18 @@ struct NotificationSettingsView: View {
     @EnvironmentObject var store: JuicerStore
 
     var body: some View {
-        ScrollView {
+        WatchScreen(title: store.t("notifications")) {
             VStack(spacing: 6) {
-                SectionHeader(title: "TÜRLER")
-                ToggleRow(dot: Theme.green, title: "Sıkım bitti", subtitle: "Tamamlanınca", isOn: $store.notifyFinish)
-                ToggleRow(dot: Theme.blue, title: "Bakım", subtitle: "Hatırlatıcı", isOn: $store.notifyMaintenance)
-                ToggleRow(dot: Theme.red, title: "Hata", subtitle: "Cihaz uyarısı", isOn: $store.notifyError)
+                SectionHeader(title: store.upper("types"))
+                ToggleRow(dot: Theme.green, title: store.t("finishJuice"), subtitle: store.t("completeWhenDone"), isOn: $store.notifyFinish)
+                ToggleRow(dot: Theme.blue, title: store.t("maintenance"), subtitle: store.t("reminder"), isOn: $store.notifyMaintenance)
+                ToggleRow(dot: Theme.red, title: store.t("error"), subtitle: store.t("deviceWarning"), isOn: $store.notifyError)
 
-                SectionHeader(title: "DİĞER")
-                ToggleRow(dot: Theme.yellow, title: "Hazne dolu", subtitle: "Posa uyarısı", isOn: $store.notifyTankFull)
-                ToggleRow(dot: Theme.orange, title: "Titreşim", subtitle: "Dokunsal", isOn: $store.notifyVibration)
+                SectionHeader(title: store.upper("other"))
+                ToggleRow(dot: Theme.yellow, title: store.t("tankFull"), subtitle: store.t("pulpWarning"), isOn: $store.notifyTankFull)
+                ToggleRow(dot: Theme.orange, title: store.t("vibration"), subtitle: store.t("haptic"), isOn: $store.notifyVibration)
             }
-            .padding(.horizontal, 10)
         }
-        .background(Theme.bg)
-        .navigationTitle("Bildirimler")
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
@@ -64,22 +63,18 @@ struct SoundSettingsView: View {
     @EnvironmentObject var store: JuicerStore
 
     var body: some View {
-        ScrollView {
+        WatchScreen(title: store.t("sound")) {
             VStack(spacing: 6) {
-                SectionHeader(title: "SES")
-                ToggleRow(dot: Theme.blue, title: "Sıkım sesi", subtitle: "Çalışırken", isOn: $store.soundJuicing)
-                ToggleRow(dot: Theme.green, title: "Açılış", subtitle: "Başlangıç sesi", isOn: $store.soundStart)
-                ToggleRow(dot: Theme.orange, title: "Bitiş", subtitle: "Tamamlanınca", isOn: $store.soundFinish)
+                SectionHeader(title: store.upper("soundSection"))
+                ToggleRow(dot: Theme.blue, title: store.t("juicingSound"), subtitle: store.t("whileRunning"), isOn: $store.soundJuicing)
+                ToggleRow(dot: Theme.green, title: store.t("startup"), subtitle: store.t("startupSound"), isOn: $store.soundStart)
+                ToggleRow(dot: Theme.orange, title: store.t("finish"), subtitle: store.t("finishWhenDone"), isOn: $store.soundFinish)
 
-                SectionHeader(title: "TİTREŞİM")
-                ToggleRow(dot: Theme.yellow, title: "Titreşim", subtitle: "Dokunsal", isOn: $store.hapticVibration)
-                ToggleRow(dot: Theme.textSecondary, title: "Sessiz mod", subtitle: "22:00 – 07:00", isOn: $store.silentMode)
+                SectionHeader(title: store.upper("vibrationSection"))
+                ToggleRow(dot: Theme.yellow, title: store.t("vibration"), subtitle: store.t("haptic"), isOn: $store.hapticVibration)
+                ToggleRow(dot: Theme.textSecondary, title: store.t("silentMode"), subtitle: store.t("quietHours"), isOn: $store.silentMode)
             }
-            .padding(.horizontal, 10)
         }
-        .background(Theme.bg)
-        .navigationTitle("Sıkım Sesi")
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
@@ -87,13 +82,13 @@ struct SoundSettingsView: View {
 struct LanguageView: View {
     @EnvironmentObject var store: JuicerStore
 
-    private var groups: [String] { ["ÖNERİLEN", "DİĞER"] }
+    private var groups: [String] { ["recommended", "other"] }
 
     var body: some View {
-        ScrollView {
+        WatchScreen(title: store.t("language")) {
             VStack(spacing: 6) {
                 ForEach(groups, id: \.self) { group in
-                    SectionHeader(title: group)
+                    SectionHeader(title: store.languageGroupTitle(group))
                     ForEach(store.languages.filter { $0.group == group }) { lang in
                         Button { store.selectLanguage(lang) } label: {
                             HStack(spacing: 8) {
@@ -117,32 +112,26 @@ struct LanguageView: View {
                     }
                 }
             }
-            .padding(.horizontal, 10)
         }
-        .background(Theme.bg)
-        .navigationTitle("Dil")
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
 // MARK: - About "Hakkında"
 struct AboutView: View {
-    var body: some View {
-        ScrollView {
-            VStack(spacing: 6) {
-                SectionHeader(title: "CİHAZ")
-                SettingRow(title: "Model", value: "FreshPress FP-24", showChevron: false)
-                SettingRow(title: "Seri No", value: "127325", showChevron: false)
-                SettingRow(title: "Yazılım", value: "Sürüm 1.2.0", showChevron: false)
+    @EnvironmentObject var store: JuicerStore
 
-                SectionHeader(title: "ÜRETİCİ")
-                SettingRow(title: "Marka", value: "FreshPress", showChevron: false)
-                SettingRow(title: "Yıl", value: "2024", showChevron: false)
+    var body: some View {
+        WatchScreen(title: store.t("about")) {
+            VStack(spacing: 6) {
+                SectionHeader(title: store.upper("device"))
+                SettingRow(title: store.t("model"), value: "JuiceLab Pro X1", showChevron: false)
+                SettingRow(title: store.t("serialNumber"), value: "FP-X1-127325", showChevron: false)
+                SettingRow(title: store.t("software"), value: "\(store.t("version")) 1.2.0", showChevron: false)
+
+                SectionHeader(title: store.upper("manufacturer"))
+                SettingRow(title: store.t("brand"), value: "FreshPress", showChevron: false)
+                SettingRow(title: store.t("year"), value: "2024", showChevron: false)
             }
-            .padding(.horizontal, 10)
         }
-        .background(Theme.bg)
-        .navigationTitle("Hakkında")
-        .navigationBarTitleDisplayMode(.inline)
     }
 }

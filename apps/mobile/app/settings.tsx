@@ -1,100 +1,115 @@
 import { useRouter } from 'expo-router';
-import { Bell, Globe, Moon, ShieldCheck } from 'lucide-react-native';
-import { useState } from 'react';
+import { Bell, Database, Globe, Moon, ShieldCheck } from 'lucide-react-native';
+import type { ReactNode } from 'react';
 import { ScrollView, Switch, View } from 'react-native';
 
 import { colors } from '@freshpress/design-system';
 
-import { useAuth } from '../src/auth/AuthContext';
 import { BackBar, Button, Card, Screen, Text } from '../src/components/ui';
+import { ListRow, SectionHeader } from '../src/components/FreshPressPrimitives';
+import { useAuth } from '../src/auth/AuthContext';
+import { t } from '../src/i18n/strings';
+import { usePreferences, type Preferences } from '../src/lib/preferences';
+import { appRoute } from '../src/lib/route';
 
-type Toggle = { key: string; icon: React.ReactNode; label: string; sub: string };
+type Toggle = { key: keyof Preferences; icon: ReactNode; label: string; sub: string };
 
-/** Settings — Figma frame 11:715. Functional local toggles + log out. */
 export default function Settings() {
   const router = useRouter();
-  const { user, logout } = useAuth();
-  const [values, setValues] = useState<Record<string, boolean>>({
-    notifications: true,
-    darkMode: false,
-    metric: true,
-    privacy: true,
-  });
+  const { logout } = useAuth();
+  const { prefs, setPref } = usePreferences();
 
   const toggles: Toggle[] = [
     {
       key: 'notifications',
-      icon: <Bell size={20} color="#574235" />,
-      label: 'Push Notifications',
-      sub: 'Streaks, low stock, reminders',
+      icon: <Bell size={20} color={colors.amber} />,
+      label: t.settings.pushNotifications,
+      sub: t.settings.pushNotificationsSub,
     },
     {
-      key: 'darkMode',
-      icon: <Moon size={20} color="#574235" />,
-      label: 'Dark Mode',
-      sub: 'Use a darker theme',
+      key: 'quietHours',
+      icon: <Moon size={20} color={colors.amber} />,
+      label: t.settings.quietHours,
+      sub: t.settings.quietHoursSub,
     },
     {
       key: 'metric',
-      icon: <Globe size={20} color="#574235" />,
-      label: 'Metric Units',
-      sub: 'Show volumes in millilitres',
+      icon: <Globe size={20} color={colors.amber} />,
+      label: t.settings.metricUnits,
+      sub: t.settings.metricUnitsSub,
     },
     {
-      key: 'privacy',
-      icon: <ShieldCheck size={20} color="#574235" />,
-      label: 'Share Usage Data',
-      sub: 'Help improve FreshPress',
+      key: 'analytics',
+      icon: <Database size={20} color={colors.amber} />,
+      label: t.settings.shareUsage,
+      sub: t.settings.shareUsageSub,
     },
   ];
 
   return (
     <Screen edges={['top']} className="px-5">
       <BackBar onPress={() => router.back()} />
-      <Text variant="display" className="py-4">
-        Settings
-      </Text>
-
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ gap: 16, paddingBottom: 24 }}
       >
-        <Card className="gap-1">
-          <Text variant="eyebrow">ACCOUNT</Text>
-          <Text variant="h3">{user?.name ?? 'Guest'}</Text>
-          <Text variant="body" className="text-[14px]">
-            {user?.email ?? '—'}
+        <View className="gap-2 pt-2">
+          <Text variant="display" className="text-[34px] leading-[42px]">
+            {t.settings.title}
           </Text>
+          <Text variant="body" className="text-[14px] leading-[20px]">
+            {t.settings.subtitle}
+          </Text>
+        </View>
+
+        <SectionHeader title={t.settings.accountSection} />
+        <Card className="gap-0 p-0">
+          <ListRow
+            title={t.settings.accountDetails}
+            subtitle={t.settings.accountDetailsSub}
+            icon={<ShieldCheck size={20} color={colors.amber} />}
+            onPress={() => router.push(appRoute('/account'))}
+          />
+          <ListRow
+            title={t.settings.help}
+            subtitle={t.settings.helpSub}
+            icon={<Bell size={20} color={colors.amber} />}
+            onPress={() => router.push(appRoute('/help'))}
+            last
+          />
         </Card>
 
+        <SectionHeader title={t.settings.preferences} />
         <Card className="gap-0 p-0">
-          {toggles.map((t, i) => (
+          {toggles.map((item, index) => (
             <View
-              key={t.key}
+              key={item.key}
               className={`flex-row items-center gap-3 px-5 py-4 ${
-                i < toggles.length - 1 ? 'border-b border-hairline' : ''
+                index < toggles.length - 1 ? 'border-b border-hairline' : ''
               }`}
             >
-              {t.icon}
-              <View className="flex-1">
+              <View className="h-10 w-10 items-center justify-center rounded-md bg-subtle">
+                {item.icon}
+              </View>
+              <View className="min-w-0 flex-1">
                 <Text variant="body" className="text-ink">
-                  {t.label}
+                  {item.label}
                 </Text>
-                <Text variant="caption" className="tracking-normal">
-                  {t.sub}
+                <Text variant="caption" className="mt-1 tracking-normal">
+                  {item.sub}
                 </Text>
               </View>
               <Switch
-                value={values[t.key] ?? false}
-                onValueChange={(v) => setValues((prev) => ({ ...prev, [t.key]: v }))}
+                value={prefs[item.key]}
+                onValueChange={(value) => setPref(item.key, value)}
                 trackColor={{ true: colors.orange, false: colors.track }}
-                thumbColor="#fff"
+                thumbColor={colors.white}
               />
             </View>
           ))}
         </Card>
 
-        <Button title="Log Out" variant="secondary" onPress={logout} className="mt-2" />
+        <Button title={t.settings.logout} variant="secondary" onPress={logout} className="mt-2" />
       </ScrollView>
     </Screen>
   );

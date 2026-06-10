@@ -1,11 +1,11 @@
 import { registerSchema, fieldErrors } from '@freshpress/validation';
 import { useRouter } from 'expo-router';
-import { ChevronLeft } from 'lucide-react-native';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
 
 import { RequestError, useAuth } from '../../src/auth/AuthContext';
-import { Button, Input, Screen, Text } from '../../src/components/ui';
+import { BackBar, Button, Input, Screen, Text } from '../../src/components/ui';
+import { t } from '../../src/i18n/strings';
 
 export default function Register() {
   const router = useRouter();
@@ -29,7 +29,7 @@ export default function Register() {
       if (err instanceof RequestError) {
         setErrors(err.fields ?? { _: err.message });
       } else {
-        setErrors({ _: 'Something went wrong. Try again.' });
+        setErrors({ _: t.auth.genericError });
       }
     } finally {
       setLoading(false);
@@ -42,68 +42,66 @@ export default function Register() {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={{ flex: 1 }}
       >
-        <Pressable onPress={() => router.back()} className="flex-row items-center py-2 -ml-1">
-          <ChevronLeft size={24} color="#574235" />
-          <Text variant="body" className="text-muted">
-            Back
-          </Text>
-        </Pressable>
+        <BackBar onPress={() => router.back()} />
 
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
-          <View className="pt-6 pb-8">
-            <Text variant="display">Create{'\n'}account.</Text>
+          <View className="pb-8 pt-6">
+            <Text variant="display">{t.auth.registerTitle}</Text>
             <Text variant="body" className="mt-3">
-              Start juicing smarter in seconds.
+              {t.auth.registerSubtitle}
             </Text>
           </View>
 
           <View className="gap-5">
             <Input
-              label="Name"
+              label={t.auth.name}
               value={form.name}
               onChangeText={set('name')}
               error={errors.name}
-              placeholder="Your name"
+              placeholder={t.auth.namePlaceholder}
               autoCapitalize="words"
             />
             <Input
-              label="Email"
+              label={t.auth.email}
               value={form.email}
               onChangeText={set('email')}
               error={errors.email}
-              placeholder="you@example.com"
+              placeholder={t.auth.emailPlaceholder}
               keyboardType="email-address"
               autoCapitalize="none"
               autoComplete="email"
             />
             <Input
-              label="Password"
+              label={t.auth.password}
               value={form.password}
               onChangeText={set('password')}
               error={errors.password}
-              placeholder="At least 8 characters"
+              placeholder={t.auth.passwordHint}
               secureTextEntry
             />
             <Input
-              label="Confirm password"
+              label={t.auth.confirmPassword}
               value={form.confirmPassword}
               onChangeText={set('confirmPassword')}
               error={errors.confirmPassword}
-              placeholder="Re-enter password"
+              placeholder={t.auth.confirmPlaceholder}
               secureTextEntry
             />
             {errors._ ? (
-              <Text variant="caption" className="text-[#d23b30] tracking-normal">
+              <Text variant="caption" className="text-danger tracking-normal">
                 {errors._}
               </Text>
             ) : null}
           </View>
 
-          <View className="gap-4 pt-8 pb-2">
-            <Button title="Create Account" loading={loading} onPress={onSubmit} />
-            <Pressable onPress={() => router.replace('/(auth)/login')} className="items-center py-2">
+          <View className="gap-3 pb-2 pt-8">
+            <Button title={t.auth.registerCta} loading={loading} onPress={onSubmit} />
+            <Pressable
+              onPress={() => router.replace('/(auth)/login')}
+              className="min-h-[44px] items-center justify-center"
+            >
               <Text variant="body" className="text-amber">
-                Already have an account? <Text className="font-bold text-amber">Log in</Text>
+                {t.auth.haveAccount} <Text className="font-bold text-amber">{t.auth.signIn}</Text>
               </Text>
             </Pressable>
           </View>

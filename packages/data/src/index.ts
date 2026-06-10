@@ -8,15 +8,29 @@
 import type {
   CalorieDay,
   Device,
+  DeviceDetails,
+  ExtractionSpeed,
+  HelpTopic,
   JuiceHistoryEntry,
   Notification,
+  Recipe,
+  StockItem,
   User,
   WeeklyGoals,
 } from '@freshpress/types';
 
 import { type MockUser, type UserData, userData, users } from './users';
+import { getStock, helpTopics, recipes } from './shared';
 
-export { recipes, programs, recommendations, stock } from './shared';
+export {
+  addCustomRecipe,
+  getStock,
+  helpTopics,
+  programs,
+  recipes,
+  recommendations,
+  setStockAmount,
+} from './shared';
 export type { MockUser, UserData };
 
 /** Runtime (session-only) users created via register/appleSignIn. */
@@ -54,11 +68,7 @@ export function publicUser(u: MockUser): User {
 }
 
 /** Create a session-only user and return its public view. */
-export function createRuntimeUser(input: {
-  name: string;
-  email: string;
-  password: string;
-}): User {
+export function createRuntimeUser(input: { name: string; email: string; password: string }): User {
   const user: MockUser = {
     id: `u-runtime-${runtimeUsers.length + 1}-${Date.now()}`,
     name: input.name.trim(),
@@ -77,7 +87,7 @@ function defaultUserData(): UserData {
     device: {
       id: 'dev-juicelab',
       name: 'JuiceLab Pro X1',
-      series: 'PREMIUM SERIES',
+      series: 'PREMIUM SERİ',
       connected: false,
       battery: 100,
       status: 'offline',
@@ -85,10 +95,23 @@ function defaultUserData(): UserData {
       yieldMl: 0,
       capacityPct: 0,
     },
+    deviceDetails: {
+      model: 'JLX1-2026',
+      serialNumber: 'FP-NEW-001',
+      firmwareVersion: 'v2.5.1',
+      bluetoothVersion: '5.2',
+      totalRuntimeMin: 0,
+      totalJuices: 0,
+      filterUses: 0,
+      filterLimit: 50,
+      nextMaintenanceDays: 45,
+      motorHealth: 'normal',
+      lastSyncAt: new Date().toISOString(),
+    },
     goals: { count: 0, goal: 14, streakDays: 0 },
     calories: {
       today: 0,
-      days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((label) => ({
+      days: ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'].map((label) => ({
         label,
         calories: 0,
       })),
@@ -97,8 +120,8 @@ function defaultUserData(): UserData {
     notifications: [
       {
         id: 'n-new-1',
-        title: 'Welcome to FreshPress 👋',
-        body: 'Pair your juicer to get started.',
+        title: 'FreshPress’e hoş geldin 👋',
+        body: 'Başlamak için makineni eşle.',
         timestamp: new Date().toISOString(),
         read: false,
         kind: 'info',
@@ -113,6 +136,10 @@ function dataFor(userId: string): UserData {
 
 export function getDevice(userId: string): Device {
   return dataFor(userId).device;
+}
+
+export function getDeviceDetails(userId: string): DeviceDetails {
+  return dataFor(userId).deviceDetails;
 }
 
 export function getHistory(userId: string): JuiceHistoryEntry[] {
@@ -131,10 +158,41 @@ export function getNotifications(userId: string): Notification[] {
   return dataFor(userId).notifications;
 }
 
+export function getHelpTopics(): HelpTopic[] {
+  return helpTopics;
+}
+
+export function getRecipeById(id: string): Recipe | null {
+  return recipes.find((recipe) => recipe.id === id) ?? null;
+}
+
+export function getStockItemById(id: string): StockItem | null {
+  return getStock().find((item) => item.id === id) ?? null;
+}
+
 /** Mutate device connection state (used by the pairing screen). */
 export function setDeviceConnected(userId: string, connected: boolean): Device {
   const d = dataFor(userId).device;
   d.connected = connected;
   d.status = connected ? 'ready' : 'offline';
   return d;
+}
+
+/** Persist the selected extraction speed on the user's device. */
+export function setDeviceSpeed(userId: string, speed: ExtractionSpeed): Device {
+  const d = dataFor(userId).device;
+  d.speed = speed;
+  return d;
+}
+
+/** Update the user's profile (name/email). Returns the password-stripped user. */
+export function updateUserProfile(
+  userId: string,
+  input: { name?: string; email?: string },
+): User | null {
+  const u = findUserById(userId);
+  if (!u) return null;
+  if (typeof input.name === 'string') u.name = input.name.trim();
+  if (typeof input.email === 'string') u.email = input.email.trim();
+  return toUser(u);
 }

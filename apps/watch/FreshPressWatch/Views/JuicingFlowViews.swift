@@ -9,29 +9,49 @@ struct ProgramsView: View {
     private var more: [Program] { Array(store.programs.dropFirst(3)) }
 
     var body: some View {
-        ScrollView {
+        WatchScreen(title: store.t("programs")) {
             VStack(spacing: 6) {
-                SectionHeader(title: "PROGRAMLAR")
-                ForEach(featured) { p in row(p) }
-                SectionHeader(title: "DAHA FAZLA")
-                ForEach(more) { p in row(p) }
+                if store.isConnected {
+                    SectionHeader(title: store.upper("programsSection"))
+                    ForEach(featured) { p in row(p) }
+                    SectionHeader(title: store.upper("more"))
+                    ForEach(more) { p in row(p) }
+                } else {
+                    Card {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Image(systemName: "wifi.slash")
+                                .font(.fp(18, .bold))
+                                .foregroundStyle(Theme.red)
+                            Text(store.t("noDevice"))
+                                .font(.fp(13, .bold))
+                                .foregroundStyle(Theme.textPrimary)
+                            Text(store.t("connectForProgram"))
+                                .font(.fp(9))
+                                .foregroundStyle(Theme.textSecondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                            PrimaryButton(title: store.t("bluetoothGo")) {
+                                path.append(Route.connection)
+                            }
+                        }
+                    }
+                }
             }
-            .padding(.horizontal, 10)
         }
-        .background(Theme.bg)
-        .navigationTitle("Program Seç")
-        .navigationBarTitleDisplayMode(.inline)
     }
 
     private func row(_ p: Program) -> some View {
         Button {
-            store.startJuicing(p)
-            path.append(Route.juicing)
+            if store.isConnected {
+                store.startJuicing(p)
+                path.append(Route.juicing)
+            } else {
+                path.append(Route.connection)
+            }
         } label: {
             HStack(spacing: 8) {
                 VStack(alignment: .leading, spacing: 1) {
-                    Text(p.name).font(.fp(12, .semibold)).foregroundStyle(Theme.textPrimary)
-                    Text("\(p.volumeMl) ml · \(p.estimate)").font(.fp(9)).foregroundStyle(Theme.textSecondary)
+                    Text(store.localizedMock(p.name)).font(.fp(12, .semibold)).foregroundStyle(Theme.textPrimary)
+                    Text("\(p.volumeMl) ml · \(store.localizedEstimate(p.estimate))").font(.fp(9)).foregroundStyle(Theme.textSecondary)
                 }
                 Spacer(minLength: 4)
                 VolumeBadge(volumeMl: p.volumeMl)
@@ -51,46 +71,63 @@ struct JuicingView: View {
     @EnvironmentObject var store: JuicerStore
     @Binding var path: NavigationPath
     @State private var pulse = false
+    @State private var didNavigateToCompletion = false
 
     var body: some View {
-        VStack(spacing: 8) {
-            ZStack {
-                ProgressRing(progress: store.progress)
-                    .frame(width: 96, height: 96)
-                VStack(spacing: 1) {
-                    HStack(spacing: 4) {
-                        Circle()
-                            .fill(Theme.orange)
-                            .frame(width: 6, height: 6)
-                            .opacity(pulse ? 0.3 : 1)
-                        Text("Sıkılıyor").font(.fp(8, .semibold)).foregroundStyle(Theme.textSecondary)
+        WatchScreen(title: store.isJuicingPaused ? store.t("paused") : store.t("juicing"), scrolls: false, horizontalPadding: 12) {
+            VStack(spacing: 8) {
+                ZStack {
+                    ProgressRing(progress: store.progress, tint: store.isJuicingPaused ? Theme.yellow : Theme.orange)
+                        .frame(width: 96, height: 96)
+                    VStack(spacing: 1) {
+                        HStack(spacing: 4) {
+                            Circle()
+                                .fill(store.isJuicingPaused ? Theme.yellow : Theme.orange)
+                                .frame(width: 6, height: 6)
+                                .opacity(store.isJuicing ? (pulse ? 0.3 : 1) : 1)
+                            Text(store.isJuicingPaused ? store.t("pausedStatus") : store.t("juicingStatus"))
+                                .font(.fp(8, .semibold))
+                                .foregroundStyle(Theme.textSecondary)
+                        }
+                        Text("%\(store.progressPercent)")
+                            .font(.fp(26, .heavy))
+                            .foregroundStyle(Theme.textPrimary)
                     }
-                    Text("%\(store.progressPercent)")
-                        .font(.fp(26, .heavy))
-                        .foregroundStyle(Theme.textPrimary)
+                }
+                .animation(.easeInOut(duration: 0.2), value: store.isJuicingPaused)
+                .onAppear { withAnimation(.easeInOut(duration: 0.7).repeatForever()) { pulse = true } }
+
+                VStack(spacing: 1) {
+                    Text(store.localizedMock(store.activeProgram?.name ?? ""))
+                        .font(.fp(12, .semibold)).foregroundStyle(Theme.textPrimary)
+                    Text(store.remainingLabel)
+                        .font(.fp(9)).foregroundStyle(Theme.textSecondary)
+                }
+
+                if store.isJuicingPaused {
+                    HStack(spacing: 6) {
+                        PrimaryButton(title: store.upper("cancelUpper"), tint: Theme.red.opacity(0.25), fg: Theme.red) {
+                            store.cancelJuicing()
+                            path = NavigationPath()
+                        }
+                        PrimaryButton(title: store.upper("resume"), tint: Theme.green, fg: .black) {
+                            store.resumeJuicing()
+                        }
+                    }
+                    .transition(.opacity.combined(with: .scale(scale: 0.96)))
+                } else {
+                    PrimaryButton(title: store.upper("stop"), tint: Theme.red.opacity(0.25), fg: Theme.red) {
+                        store.pauseJuicing()
+                    }
+                    .transition(.opacity.combined(with: .scale(scale: 0.96)))
                 }
             }
-            .onAppear { withAnimation(.easeInOut(duration: 0.7).repeatForever()) { pulse = true } }
-
-            VStack(spacing: 1) {
-                Text(store.activeProgram?.name ?? "")
-                    .font(.fp(12, .semibold)).foregroundStyle(Theme.textPrimary)
-                Text(store.remainingLabel)
-                    .font(.fp(9)).foregroundStyle(Theme.textSecondary)
-            }
-
-            PrimaryButton(title: "DURDUR", tint: Theme.red.opacity(0.25), fg: Theme.red) {
-                store.stopJuicing()
-                path = NavigationPath()
-            }
         }
-        .padding(.horizontal, 12)
-        .background(Theme.bg)
-        .navigationTitle("Sıkılıyor")
-        .navigationBarTitleDisplayMode(.inline)
-        .onChange(of: store.showCompletionSheet) { _, shown in
-            // when timer completes, advance the stack to Completed
-            if shown { path.append(Route.completed) }
+        .onChange(of: store.progress) { _, progress in
+            if progress >= 1, store.lastCompletedEntry != nil, !didNavigateToCompletion {
+                didNavigateToCompletion = true
+                path.append(Route.completed)
+            }
         }
     }
 }
@@ -101,28 +138,36 @@ struct CompletedView: View {
     @Binding var path: NavigationPath
 
     var body: some View {
-        VStack(spacing: 8) {
-            Image(systemName: "checkmark.circle.fill")
-                .font(.fp(44))
-                .foregroundStyle(Theme.green)
-            Text("TAMAMLANDI")
-                .font(.fp(8, .bold))
-                .foregroundStyle(Theme.textSecondary)
-            if let p = store.activeProgram {
-                Text("\(p.volumeMl) ml · \(p.name)")
-                    .font(.fp(10, .semibold))
-                    .foregroundStyle(Theme.textPrimary)
+        WatchScreen(title: store.t("completed"), scrolls: false, horizontalPadding: 12) {
+            VStack(spacing: 8) {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.fp(44))
+                    .foregroundStyle(Theme.green)
+                    .symbolEffect(.bounce, value: store.lastCompletedEntry?.id)
+                Text(store.upper("completedUpper"))
+                    .font(.fp(8, .bold))
+                    .foregroundStyle(Theme.textSecondary)
+                if let entry = store.lastCompletedEntry {
+                    Text("\(entry.volumeMl) ml · \(store.localizedMock(entry.name))")
+                        .font(.fp(10, .semibold))
+                        .foregroundStyle(Theme.textPrimary)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.center)
+                }
+                PrimaryButton(title: store.t("viewDetail")) {
+                    if let entry = store.lastCompletedEntry ?? store.history.first {
+                        path.append(Route.detail(entry))
+                    }
+                }
+                PrimaryButton(title: store.t("newJuice"), tint: Theme.cardElevated, fg: Theme.textPrimary) {
+                    path = NavigationPath()
+                    path.append(Route.programs)
+                }
+                TextButton(title: store.t("home")) {
+                    path = NavigationPath()
+                }
             }
-            PrimaryButton(title: "Yeni Sıkım") {
-                path = NavigationPath()
-                path.append(Route.programs)
-            }
-            .padding(.top, 4)
         }
-        .padding(.horizontal, 12)
-        .background(Theme.bg)
-        .navigationTitle("Tamamlandı")
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
@@ -133,19 +178,19 @@ struct CompletionSheet: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        ScrollView {
+        WatchScreen(title: store.t("completed"), showsBack: false) {
             VStack(spacing: 8) {
                 Image(systemName: "checkmark.circle.fill")
                     .font(.fp(20))
                     .foregroundStyle(Theme.green)
-                Text("Sıkım tamamlandı")
+                Text(store.t("juicingCompleted"))
                     .font(.fp(18, .bold))
                     .foregroundStyle(Theme.textPrimary)
                 if let p = store.activeProgram {
-                    Text("\(p.volumeMl) ml · \(p.name)")
+                    Text("\(p.volumeMl) ml · \(store.localizedMock(p.name))")
                         .font(.fp(9)).foregroundStyle(Theme.textSecondary)
                 }
-                PrimaryButton(title: "Detayı Gör") {
+                PrimaryButton(title: store.t("viewDetail")) {
                     if let p = store.activeProgram, let entry = store.history.first(where: { $0.name == p.name }) {
                         dismiss()
                         path.append(Route.detail(entry))
@@ -154,12 +199,10 @@ struct CompletionSheet: View {
                     }
                 }
                 .padding(.top, 4)
-                TextButton(title: "Kapat") { dismiss() }
+                TextButton(title: store.t("close")) { dismiss() }
             }
-            .padding(.horizontal, 12)
             .frame(maxWidth: .infinity)
         }
-        .background(Theme.bg)
     }
 }
 
@@ -170,24 +213,28 @@ struct DetailView: View {
     @Binding var path: NavigationPath
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 8) {
-                Text(entry.name)
+        WatchScreen(title: store.t("detail")) {
+            VStack(spacing: 6) {
+                Text(store.localizedMock(entry.name))
                     .font(.fp(12, .semibold)).foregroundStyle(Theme.textPrimary)
                 Text("\(entry.volumeMl) ml")
-                    .font(.fp(36, .heavy)).foregroundStyle(Theme.orange)
-                Text(entry.ingredients.isEmpty ? "—" : entry.ingredients)
+                    .font(.fp(31, .heavy)).foregroundStyle(Theme.orange)
+                Text(entry.ingredients.isEmpty ? "—" : store.localizedMock(entry.ingredients))
                     .font(.fp(8)).foregroundStyle(Theme.textSecondary)
                     .multilineTextAlignment(.center)
 
                 HStack(spacing: 6) {
-                    StatTile(label: "SÜRE", value: entry.durationLabel)
-                    StatTile(label: "SAAT", value: entry.time)
-                    StatTile(label: "DURUM", value: "✓ İyi")
+                    StatTile(label: store.upper("duration"), value: entry.durationLabel)
+                    StatTile(label: store.upper("time"), value: entry.time)
+                    StatTile(label: store.upper("status"), value: "\(entry.status.symbol) \(store.historyStatus(entry.status))")
                 }
 
-                PrimaryButton(title: "Tekrar Sık") {
-                    if let p = store.programs.first(where: { $0.name == entry.name }) {
+                PrimaryButton(title: store.t("repeatJuice")) {
+                    guard store.isConnected else {
+                        path.append(Route.connection)
+                        return
+                    }
+                    if let p = store.program(matching: entry) {
                         store.startJuicing(p)
                     } else if let p = store.programs.first {
                         store.startJuicing(p)
@@ -196,10 +243,6 @@ struct DetailView: View {
                 }
                 .padding(.top, 2)
             }
-            .padding(.horizontal, 10)
         }
-        .background(Theme.bg)
-        .navigationTitle("Detay")
-        .navigationBarTitleDisplayMode(.inline)
     }
 }

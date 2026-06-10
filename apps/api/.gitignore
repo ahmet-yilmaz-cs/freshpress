@@ -1,0 +1,18 @@
+# Python virtualenv & caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Flask / SQLite (runtime, regenerated on first run)
+instance/
+*.db
+*.sqlite
+*.sqlite3
+freshpress.db
+
+# Secrets — copy .env.example → .env
+.env
+.env.local

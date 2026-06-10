@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FreshPress — Tıklanabilir Prototip</title>
+<style>
+:root{
+  --brown:#8c4a22; --brown-d:#6f3a1a; --rust:#a1561f;
+  --orange:#f2811d; --orange-d:#d96c12; --yellow:#f6c544;
+  --green:#7cb342; --green-l:#cfe8b0; --green-d:#4e7a23;
+  --ink:#2a2a28; --mut:#8d8c86; --line:#ece8e0; --bg:#f5f2ec;
+  --card:#ffffff; --shadow:0 2px 10px rgba(0,0,0,.06); --red:#e23b3b; --blue:#2f78d4;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:#3a3a3c;color:var(--ink);
+  min-height:100vh;display:flex;flex-direction:row;flex-wrap:wrap;align-items:flex-start;justify-content:center;gap:30px;
+  padding:32px 16px 60px;-webkit-font-smoothing:antialiased;
+}
+.help{color:#cbcbc7;font-size:13px;text-align:left;width:300px;max-width:100%;line-height:1.6;background:#2c2c2e;border:1px solid #474749;border-radius:18px;padding:20px;margin-top:30px}
+.help h2{color:#fff;font-size:16px;font-weight:700;margin:0 0 3px}
+.help .lead{color:#8f8f8b;font-size:12px;margin-bottom:14px}
+.help ul{margin:0;padding-left:17px}
+.help li{margin-bottom:10px}
+.help b{color:#fff;font-weight:600}
+.help .rd{color:#ff8a8a;font-weight:600}
+.help .bl{color:#7fb4ff;font-weight:600}
+.help .key{display:inline-block;background:#3a3a3c;border:1px solid #565658;border-radius:7px;padding:0 7px;font-size:12px;color:#eee}
+
+.device{width:392px;max-width:100%;background:#1f1f20;border-radius:34px;padding:10px;box-shadow:0 18px 50px rgba(0,0,0,.5)}
+.frame-top{height:30px;display:flex;align-items:center;justify-content:center;position:relative}
+.frame-name{color:#9b9a95;font-size:13px;letter-spacing:.2px}
+.frame-name.miss{color:#ff8a8a}
+.frame-name.isnew{color:#7fb4ff}
+.frame-menu{position:absolute;right:8px;top:4px;color:#bdbcb6;font-size:12px;background:#333;border:none;border-radius:14px;padding:5px 10px;cursor:pointer}
+.frame-menu:hover{background:#444}
+.viewport{height:760px;background:var(--bg);border-radius:26px;overflow:hidden;position:relative}
+.viewport.missing{box-shadow:inset 0 0 0 4px var(--red)}
+.viewport.isnew{box-shadow:inset 0 0 0 4px var(--blue)}
+.scroll{height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.scroll::-webkit-scrollbar{width:0}
+
+.screen{display:none;min-height:100%}
+.screen.active{display:block}
+.pad{padding:18px 18px 92px}
+
+.logo{font-weight:800;color:var(--rust);font-size:23px;letter-spacing:-.3px}
+.row{display:flex;align-items:center}.between{justify-content:space-between}
+.avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#d8a17a,#9c6b45);border:2px solid #fff;box-shadow:var(--shadow)}
+.badge{display:inline-flex;align-items:center;gap:5px;background:var(--green-l);color:var(--green-d);font-size:11px;font-weight:700;padding:5px 11px;border-radius:20px;letter-spacing:.4px}
+.card{background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:16px}
+.btn{display:block;width:100%;border:none;border-radius:30px;padding:16px;font-size:16px;font-weight:700;cursor:pointer;text-align:center}
+.btn-primary{background:var(--brown);color:#fff}.btn-primary:hover{background:var(--brown-d)}
+.btn-ghost{background:#fff;color:var(--ink);box-shadow:var(--shadow)}
+.btn-orange{background:var(--orange);color:#fff}.btn-orange:hover{background:var(--orange-d)}
+.btn-dead{opacity:.55;cursor:default}
+.muted{color:var(--mut)}
+.h1{font-size:30px;font-weight:800;line-height:1.1;letter-spacing:-.5px}
+.h2{font-size:18px;font-weight:700;margin:18px 0 10px}
+.sub{color:var(--mut);font-size:14px;line-height:1.5}
+.imgph{border-radius:16px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.92);font-size:12px;font-weight:600;letter-spacing:.5px}
+.tap{cursor:pointer}
+
+.nav{position:absolute;left:0;right:0;bottom:0;height:64px;background:#fff;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-around;padding:0 4px}
+.nav .item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#b3b1aa;font-size:10px;cursor:pointer;flex:1}
+.nav .item.on{color:var(--rust)}
+.nav .item svg{width:22px;height:22px}
+.nav .center{flex:0 0 auto;margin-top:-26px}
+.nav .center .pill{width:54px;height:54px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(242,129,29,.45)}
+.nav .center .pill svg{width:25px;height:25px;color:#fff}
+.nav .center span{font-size:10px;color:var(--rust);font-weight:600;display:block;text-align:center;margin-top:2px}
+
+/* welcome */
+#welcome .wrap{min-height:100%;background:linear-gradient(180deg,#fff 0%, #fbe7d6 55%, #f7d9bf 100%);padding:26px 22px 96px;display:flex;flex-direction:column}
+#welcome .hero{height:240px;border-radius:22px;margin:8px 0 24px;background:linear-gradient(160deg,#d9d4ce,#b9b3ab);display:flex;align-items:flex-end;justify-content:center}
+#welcome .machine{width:120px;height:160px;background:linear-gradient(180deg,#cfccc8,#9b9893);border-radius:14px;margin-bottom:28px;position:relative;box-shadow:inset 0 0 12px rgba(0,0,0,.15)}
+#welcome .machine:before{content:"";position:absolute;top:-22px;left:50%;transform:translateX(-50%);width:26px;height:30px;background:#3a3633;border-radius:6px}
+#welcome .machine:after{content:"";position:absolute;top:42%;left:50%;transform:translateX(-50%);width:48px;height:40px;background:#2c2926;border-radius:5px}
+
+/* pairing */
+#pairing .disc{width:190px;height:190px;border-radius:50%;background:radial-gradient(circle at 50% 45%, #f3ece2, #efe5d7);margin:14px auto 6px;display:flex;align-items:center;justify-content:center}
+#pairing .disc .bars{display:flex;gap:8px;align-items:flex-end}
+#pairing .disc .bars i{width:9px;background:var(--rust);border-radius:3px;display:block}
+.device-row{display:flex;align-items:center;gap:12px;background:#fff;border-radius:16px;padding:12px;box-shadow:var(--shadow);margin-top:10px}
+.device-row .ic{width:42px;height:42px;border-radius:11px;background:var(--green-l);display:flex;align-items:center;justify-content:center;color:var(--green-d);font-weight:800}
+.pairbtn{margin-left:auto;background:var(--orange);color:#fff;border:none;border-radius:20px;padding:9px 18px;font-weight:700;cursor:pointer}
+.info-box{margin-top:16px;background:#f4f1ea;border-radius:14px;padding:13px;color:var(--mut);font-size:13px;line-height:1.5}
+
+/* control */
+.connect-card .thumb{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,#f2a35a,#e07e1f);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700}
+.statbox{flex:1;background:#f6f3ee;border-radius:12px;padding:10px 12px}
+.statbox .k{font-size:11px;color:var(--mut)}.statbox .v{font-weight:700;font-size:14px;margin-top:2px}
+.yield{border-radius:18px;overflow:hidden;background:#fff;box-shadow:var(--shadow);margin-top:14px}
+.yield .top{padding:16px 16px 8px;text-align:center}
+.yield .fill{background:linear-gradient(180deg,#f7f3ee 0%,#f6c544 55%,#f2811d 100%);height:118px;display:flex;align-items:flex-end;justify-content:center;padding:14px;color:#fff}
+.yield .vol{font-size:34px;font-weight:800;text-shadow:0 1px 2px rgba(0,0,0,.18)}
+.slider{height:6px;border-radius:4px;background:#eee;margin:14px 0 6px;position:relative}
+.slider .thumb{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50%;background:var(--orange);box-shadow:0 1px 4px rgba(0,0,0,.25);transition:left .2s}
+
+/* preparing */
+.ring{width:178px;height:178px;border-radius:50%;margin:14px auto;display:flex;align-items:center;justify-content:center;background:conic-gradient(#f2811d 0 65%, #efe9e0 65% 100%)}
+.ring .hole{width:138px;height:138px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .pct{font-size:32px;font-weight:800}
+.ing-row{display:flex;align-items:center;gap:10px;padding:10px 0}
+.ing-row .dot{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px}
+.bar{flex:1;height:6px;border-radius:4px;background:#eee;overflow:hidden}.bar i{display:block;height:100%;background:var(--green)}
+.pill-sm{font-size:10px;font-weight:700;padding:3px 9px;border-radius:12px;background:var(--green-l);color:var(--green-d)}
+
+/* ready */
+#ready .wrap{min-height:100%;background:linear-gradient(180deg,#fdeede 0%, #eef4e2 100%);padding:18px 18px 92px}
+#ready .bottle{width:168px;height:168px;border-radius:50%;background:radial-gradient(circle at 50% 40%,#fff,#efe8dd);margin:6px auto 4px;display:flex;align-items:center;justify-content:center}
+#ready .bottle .b{width:50px;height:108px;border-radius:10px 10px 14px 14px;background:linear-gradient(180deg,#f7b14b,#ef8a2c);position:relative}
+#ready .bottle .b:before{content:"";position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:18px;height:14px;background:#cfa97f;border-radius:3px}
+.protip{background:#fdf2d6;border-radius:14px;padding:12px;display:flex;gap:10px;font-size:13px;color:#8a6a25;line-height:1.5;margin-top:8px}
+
+/* stock */
+.check-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+.check-row:last-child{border-bottom:none}
+.cb{width:22px;height:22px;border-radius:6px;border:2px solid #d8d3c8;flex:0 0 auto;cursor:pointer}
+.cb.on{background:var(--orange);border-color:var(--orange);position:relative}
+.cb.on:after{content:"✓";color:#fff;font-size:13px;position:absolute;left:4px;top:-1px}
+.qty{margin-left:auto;color:var(--mut);font-size:13px}
+.add-fab{width:38px;height:38px;border-radius:50%;border:none;background:var(--orange);color:#fff;font-size:24px;font-weight:700;cursor:pointer;line-height:1;box-shadow:0 4px 12px rgba(242,129,29,.4)}
+.stk-group{margin-top:14px}
+.stk-row{display:flex;align-items:center;gap:12px;background:#fff;border-radius:14px;box-shadow:var(--shadow);padding:12px;margin-top:10px}
+.stk-ic{width:42px;height:42px;border-radius:11px;flex:0 0 auto}
+.stk-name{font-weight:700}
+.stk-qty{margin-left:auto;font-weight:800;font-size:17px}
+.stk-low{margin-left:auto;display:flex;align-items:center;gap:10px}
+.low-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:12px;background:#fde0c4;color:#b5641a}
+.stk-banner{background:#e7f1da;border-radius:14px;padding:12px;font-size:13px;color:var(--green-d);margin-top:12px;line-height:1.45}
+.stepper{margin-left:auto;display:flex;align-items:center;gap:14px}
+.stepper button{width:30px;height:30px;border-radius:50%;border:none;background:#f1ede4;color:var(--ink);font-size:18px;font-weight:700;cursor:pointer;line-height:1}
+.stepper button.plus{background:var(--orange);color:#fff}
+.stepper .n{min-width:18px;text-align:center;font-weight:800}
+.empty{color:var(--mut);text-align:center;padding:34px 10px;font-size:14px;line-height:1.5}
+.hscroll{display:flex;gap:12px;overflow-x:auto;padding:10px 2px 6px;scroll-snap-type:x mandatory;scrollbar-width:none}
+.hscroll::-webkit-scrollbar{display:none}
+.wide-card{flex:0 0 86%;scroll-snap-align:start;background:#fff;border-radius:16px;box-shadow:var(--shadow);overflow:hidden;cursor:pointer}
+.wide-card .ph{height:120px}
+.wide-card .body{padding:12px}
+.wide-card .t{font-weight:800;font-size:15px}
+.wide-card .d{font-size:12px;color:var(--mut);margin-top:3px;line-height:1.4}
+.wide-card .m{font-size:12px;color:var(--rust);font-weight:700;margin-top:6px}
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-top:18px}
+.sec-head .h{font-weight:700}
+.add-recipe-btn{background:var(--orange);color:#fff;border:none;border-radius:18px;padding:7px 14px;font-weight:700;font-size:13px;cursor:pointer}
+.cover{height:120px;border-radius:16px;margin-top:14px;position:relative;background:linear-gradient(135deg,#3f6b1f,#6ba12f)}
+.cover .pencil{position:absolute;right:10px;bottom:10px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center;color:#444;font-size:15px}
+.field{margin-top:14px}
+.field label{font-size:12px;font-weight:700;color:var(--mut);display:block;margin-bottom:6px}
+.field input,.field textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:15px;font-family:inherit;background:#fff;resize:vertical;outline:none}
+.field input:focus,.field textarea:focus{border-color:var(--orange)}
+.cal-card{margin-top:16px;background:#fdf2e2;border-radius:16px;padding:16px;text-align:center}
+.cal-card .big{font-size:30px;font-weight:800;color:var(--orange-d)}
+.cal-card .lbl{font-size:12px;color:#9a6a2a;margin-top:2px}
+.ing-add-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.ing-add-row .ic{width:34px;height:34px;border-radius:9px;flex:0 0 auto}
+.ing-add-row .nm{font-weight:600;font-size:14px}
+.ing-add-row .kc{font-size:11px;color:var(--mut)}
+.browse-cta{margin-top:16px;height:96px;border-radius:16px;background:linear-gradient(135deg,#3f6b1f,#7cb342);color:#fff;display:flex;flex-direction:column;justify-content:center;padding:0 18px;cursor:pointer;box-shadow:var(--shadow)}
+.browse-cta .bt{font-size:18px;font-weight:800}
+.browse-cta .bs{font-size:12px;opacity:.9;margin-top:3px}
+
+/* explore */
+.search{display:flex;align-items:center;gap:8px;background:#fff;border-radius:14px;padding:12px 14px;box-shadow:var(--shadow);color:var(--mut);font-size:14px}
+.cats{display:flex;gap:14px;margin:16px 0;overflow-x:auto}
+.cat{flex:0 0 auto;text-align:center;font-size:11px;color:var(--mut)}
+.cat .c{width:46px;height:46px;border-radius:50%;margin:0 auto 5px;display:flex;align-items:center;justify-content:center;color:#fff}
+.hero-detox{height:150px;border-radius:18px;background:linear-gradient(135deg,#3f6b1f,#6ba12f);color:#fff;padding:16px;display:flex;flex-direction:column;justify-content:flex-end}
+.smartgoal{margin-top:12px;border-radius:16px;background:linear-gradient(135deg,#f5912a,#e0741a);color:#fff;padding:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.rcard{background:#fff;border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.rcard .ph{height:92px}.rcard .body{padding:10px}.rcard .t{font-weight:700;font-size:13px}
+.rcard .d{font-size:11px;color:var(--mut);margin-top:3px;line-height:1.4}
+
+/* recipe detail */
+.detail-hero{height:120px;border-radius:18px;background:linear-gradient(120deg,#cfd3b0,#8db24a 60%,#e8902f);color:#fff;padding:16px;display:flex;align-items:flex-end;font-size:22px;font-weight:800}
+.meta{display:flex;justify-content:space-around;text-align:center;margin:16px 0}
+.meta .k{font-size:11px;color:var(--mut)}.meta .v{font-weight:800;margin-top:3px}
+.ings{display:flex;gap:10px;margin-top:6px}.ings .it{flex:1;text-align:center}
+.ings .ph{height:64px;border-radius:12px;margin-bottom:6px}
+.step{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+.step .n{width:26px;height:26px;border-radius:50%;background:var(--orange);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;flex:0 0 auto}
+.nutri{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.nutri .n{background:#f6f3ee;border-radius:10px;padding:10px}.nutri .n .v{font-weight:800}.nutri .n .k{font-size:11px;color:var(--mut)}
+
+/* settings */
+.set-row{display:flex;align-items:center;gap:14px;padding:15px 0;border-bottom:1px solid var(--line)}
+.set-row .ic{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;flex:0 0 auto}
+.set-row .arr{margin-left:auto;color:#c9c5bb}.set-row .sub2{font-size:12px;color:var(--mut)}
+.tag-conn{font-size:11px;color:var(--green-d);font-weight:700;margin-left:auto}
+.unit-toggle{display:inline-flex;background:#f0ece4;border-radius:10px;padding:3px}
+.unit-toggle .ut{border:none;background:transparent;font-weight:700;font-size:13px;padding:6px 16px;border-radius:8px;cursor:pointer;color:var(--mut)}
+.unit-toggle .ut.on{background:#fff;color:var(--rust);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+
+/* goals */
+.vit{display:flex;align-items:center;justify-content:space-between}
+.vit .donut{width:84px;height:84px;border-radius:50%;background:conic-gradient(#4e7a23 0 75%, #e7eadf 75% 100%);display:flex;align-items:center;justify-content:center}
+.vit .donut .in{width:64px;height:64px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--green-d)}
+.stat2{display:flex;gap:12px;margin-top:14px}
+.stat2 .b{flex:1;border-radius:16px;padding:14px}.stat2 .b.green{background:#e7f1da}.stat2 .b.tan{background:#f1e8d4}
+.stat2 .b .v{font-size:20px;font-weight:800}.stat2 .b .k{font-size:12px;color:var(--mut)}
+.hist{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+.hist .ph{width:42px;height:42px;border-radius:10px;flex:0 0 auto}
+.goalcards{display:flex;gap:12px;margin-top:10px}
+.goalcards .g{flex:1;background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:14px}
+
+/* weekly */
+.chart{display:flex;align-items:flex-end;gap:10px;height:120px;padding:10px 4px;border-bottom:1px solid var(--line)}
+.chart .col{flex:1;background:linear-gradient(180deg,#caa06a,#8a5a2a);border-radius:6px 6px 0 0}
+.insight2{display:flex;gap:12px;margin-top:12px}.insight2 .b{flex:1;border-radius:14px;padding:14px}
+.insight2 .b.g{background:#e7f1da}.insight2 .b.o{background:#fbe7d3}
+
+/* calories */
+.cring{width:150px;height:150px;border-radius:50%;margin:8px auto 4px;background:conic-gradient(#f2811d 0 70%, #efe9e0 70% 100%);display:flex;align-items:center;justify-content:center}
+.cring .in{width:118px;height:118px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.macro{margin:12px 0}.macro .lab{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px}
+.macro .bar{height:8px;border-radius:5px;background:#eee;overflow:hidden}.macro .bar i{display:block;height:100%}
+.log-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+.log-row .ph{width:40px;height:40px;border-radius:10px;flex:0 0 auto}.log-row .kc{margin-left:auto;font-weight:700;font-size:13px}
+
+/* missing screens */
+.miss-banner{background:var(--red);color:#fff;font-size:12px;font-weight:700;text-align:center;padding:8px;border-radius:10px;margin-bottom:16px}
+.new-banner{background:var(--blue);color:#fff;font-size:12px;font-weight:700;text-align:center;padding:8px;border-radius:10px;margin-bottom:16px}
+
+/* jump menu */
+.jump{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+.jump.open{display:flex}
+.jump .panel{background:#fff;border-radius:18px;max-width:420px;width:100%;max-height:82vh;overflow:auto;padding:18px}
+.jump h3{font-size:16px;margin-bottom:4px}.jump .pmut{font-size:13px;color:var(--mut);margin-bottom:12px}
+.jump .ji{display:flex;justify-content:space-between;align-items:center;padding:11px 12px;border-radius:12px;cursor:pointer}
+.jump .ji:hover{background:#f4f1ea}.jump .ji .en{color:var(--mut);font-size:12px}
+.jump .ji .num{width:24px;color:#c2bdb2;font-size:12px}
+.jump .ji.miss .nm{color:var(--red)}
+.jump .ji.isnew .nm{color:var(--blue)}
+</style>
+</head>
+<body>
+
+<div class="help">
+  <h2>FreshPress — Tıklanabilir Prototip</h2>
+  <div class="lead">CENG318 · Group 19 · etkileşim demosu</div>
+  <ul>
+    <li>Yalnızca <b>gerçek geçiş yapan</b> öğeler tıklanır; gerisi statik tasarımdır.</li>
+    <li>Alt menü (Explore · Stock · Smart Juicer · İstatistik · Profile) <b>her ekranda</b> durur.</li>
+    <li><b>Smart Juicer</b>'da tarif seç → Start Juicing. <b>Hazırlanıyor</b> sıkım bitince otomatik <b>İçeceğiniz Hazır</b>'a geçer (Pause/Cancel var). Kalori otomatik loglanır, <b>Undo</b> ile geri alınır.</li>
+    <li>Üstteki koyu bar = ekranın <b>Figma adı</b>. Tüm ekranlara atlamak için sağ üstteki <span class="key">≡ Ekranlar</span>.</li>
+    <li><span class="rd">Kırmızı çerçeve</span> = henüz tasarlanmadı (placeholder). <span class="bl">Mavi çerçeve</span> = Figma'da yoktu, prototipte eklendi.</li>
+  </ul>
+</div>
+
+<div class="device">
+  <div class="frame-top">
+    <span class="frame-name" id="frameName">Hoş Geldiniz</span>
+    <button class="frame-menu" onclick="toggleJump()">≡ Ekranlar</button>
+  </div>
+  <div class="viewport" id="viewport">
+    <div class="scroll" id="scroll">
+
+      <!-- 1. WELCOME -->
+      <section class="screen active" id="welcome" data-name="Hoş Geldiniz" data-nav="none">
+        <div class="wrap">
+          <div class="hero"><div class="machine"></div></div>
+          <div style="text-align:center"><span class="badge">⚡ SMART JUICING</span></div>
+          <h1 class="h1" style="margin:16px 0 24px">Freshness in<br><span style="color:var(--rust)">every drop.</span></h1>
+          <button class="btn btn-primary" onclick="go('pairing')">Get Started</button>
+          <button class="btn btn-ghost" style="margin-top:12px" onclick="go('login')">Log In</button>
+        </div>
+      </section>
+
+      <!-- 2. PAIRING -->
+      <section class="screen" id="pairing" data-name="Cihaz Eşleştirme" data-nav="none">
+        <div class="pad">
+          <div class="row between"><span class="logo">FreshPress</span><span class="avatar"></span></div>
+          <div class="disc"><div class="bars"><i style="height:34px"></i><i style="height:50px"></i><i style="height:40px"></i></div></div>
+          <h2 style="text-align:center;color:var(--rust);font-size:20px;margin-top:8px">Searching for devices…</h2>
+          <p class="sub" style="text-align:center;margin-top:6px">Keep your juicer close and make sure Bluetooth is turned on.</p>
+          <p class="muted" style="font-size:11px;font-weight:700;letter-spacing:.5px;margin-top:22px">NEARBY DEVICES</p>
+          <div class="device-row">
+            <div class="ic">▥</div>
+            <div><div style="font-weight:700">JuiceLab Pro X1</div><div style="font-size:11px;color:var(--green-d)">▮▮▮ Strong Signal</div></div>
+            <button class="pairbtn" onclick="go('control')">Pair</button>
+          </div>
+          <div class="info-box">ⓘ If your device isn't appearing, try power cycling your JuiceLab Pro X1 and restarting your phone's Bluetooth.</div>
+        </div>
+      </section>
+
+      <!-- 3. CONTROL -->
+      <section class="screen" id="control" data-name="Cihaz Kontrolü" data-nav="control">
+        <div class="pad">
+          <div class="row between"><span class="logo">FreshPress</span><span class="avatar"></span></div>
+          <div class="card connect-card" style="margin-top:14px">
+            <div class="row" style="gap:14px">
+              <div class="thumb">CONNECTED</div>
+              <div style="flex:1">
+                <div style="font-size:11px;color:var(--rust);font-weight:700">PREMIUM SERIES</div>
+                <div style="font-weight:800;font-size:17px">JuiceLab Pro X1</div>
+                <div class="sub" style="font-size:12px">Your smart companion for the perfect nutrient extraction.</div>
+              </div>
+            </div>
+            <div class="row" style="gap:10px;margin-top:12px">
+              <div class="statbox"><div class="k">Battery</div><div class="v" style="color:var(--green-d)">⚡ 82%</div></div>
+              <div class="statbox"><div class="k">Status</div><div class="v">✓ Ready</div></div>
+            </div>
+            <div class="row between tap" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line)" onclick="go('deviceinfo')"><span style="font-weight:700;font-size:13px">Cihaz Bilgileri</span><span style="color:var(--orange);font-weight:700;font-size:16px">›</span></div>
+          </div>
+          <div id="selRecipe" class="card" style="margin-top:14px"></div>
+          <button class="btn" style="background:var(--green);color:#fff;margin-top:14px" onclick="startJuicing()">START JUICING ▶</button>
+          <p class="muted" style="font-size:12px;font-weight:700;margin-top:18px">CAPACITY?</p>
+          <div class="yield">
+            <div class="top"><span style="color:var(--orange)">◓</span><div class="muted" style="font-size:13px">Yield Volume</div></div>
+            <div class="fill"><span class="vol">450<span style="font-size:16px">ml</span></span></div>
+          </div>
+          <div class="card tap" style="margin-top:14px" onclick="cycleSpeed()">
+            <div class="row between"><span style="font-weight:700">⊘ Extraction Speed</span><span id="speedLabel" style="color:var(--orange);font-weight:700">Medium</span></div>
+            <div class="slider"><span class="thumb" id="speedThumb"></span></div>
+            <div class="row between sub" style="font-size:11px"><span>Low</span><span>Medium</span><span>High</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3b. DEVICE INFO -->
+      <section class="screen" id="deviceinfo" data-name="Cihaz Bilgileri" data-nav="control" data-new="1">
+        <div class="pad">
+          <div class="new-banner">Bu ekran Figma'da yoktu — prototipte eklendi</div>
+          <div class="row between"><span class="logo">FreshPress</span><span class="avatar"></span></div>
+          <div class="card connect-card" style="margin-top:14px">
+            <div class="row" style="gap:14px">
+              <div class="thumb">CONNECTED</div>
+              <div style="flex:1">
+                <div style="font-size:11px;color:var(--rust);font-weight:700">PREMIUM SERIES</div>
+                <div style="font-weight:800;font-size:17px">JuiceLab Pro X1</div>
+                <div class="sub" style="font-size:12px">Model JLX1-2024 · Seri No FP-7741-029</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="h2">Kullanım Özeti</div>
+          <div class="row" style="gap:10px">
+            <div class="statbox"><div class="k">Toplam çalışma</div><div class="v">47 sa 22 dk</div></div>
+            <div class="statbox"><div class="k">Toplam sıkım</div><div class="v">214 kez</div></div>
+          </div>
+
+          <div class="h2">Bakım Durumu</div>
+          <div class="card">
+            <div class="macro" style="margin:0"><div class="lab"><span>Filtre ömrü</span><span class="muted">38 / 50 kullanım</span></div><div class="bar"><i style="width:76%;background:var(--orange)"></i></div></div>
+            <div class="sub" style="font-size:12px;margin-top:8px">Yaklaşık 2 hafta içinde filtre değişimi öneriliyor.</div>
+          </div>
+          <div class="card" style="margin-top:10px">
+            <div class="row between"><span class="sub">Sonraki bakım</span><span style="font-weight:700">~2 hafta</span></div>
+            <div class="row between" style="margin-top:10px"><span class="sub">Motor durumu</span><span style="font-weight:700;color:var(--green-d)">Normal</span></div>
+            <div class="row between" style="margin-top:10px"><span class="sub">Son senkronizasyon</span><span style="font-weight:700">Bugün 09:14</span></div>
+          </div>
+
+          <div class="h2">Teknik Bilgi</div>
+          <div class="card">
+            <div class="row between"><span class="sub">Firmware</span><span style="font-weight:700">v2.5.1</span></div>
+            <div class="row between" style="margin-top:10px"><span class="sub">Bağlantı</span><span style="font-weight:700">Bluetooth 5.2</span></div>
+            <div class="row between" style="margin-top:10px"><span class="sub">Batarya</span><span style="font-weight:700;color:var(--green-d)">⚡ 82%</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. PREPARING -->
+      <section class="screen" id="preparing" data-name="Hazırlanıyor…" data-nav="control">
+        <div class="pad">
+          <div class="row between"><span class="logo">FreshPress</span><span class="avatar"></span></div>
+          <div class="card" style="margin-top:14px">
+            <div class="ring" id="prepRing"><div class="hole"><div class="pct" id="prepPct">65%</div><div class="muted" style="font-size:12px">⏱ 01:12</div><div class="muted" style="font-size:10px;letter-spacing:1px">REMAINING</div></div></div>
+            <div class="row" style="gap:12px;margin-top:6px">
+              <button class="btn btn-primary" id="pauseBtn" style="padding:13px" onclick="togglePause()">⏸ Pause</button>
+              <button class="btn btn-ghost" style="padding:13px" onclick="go('control')">✕ Cancel</button>
+            </div>
+          </div>
+          <div class="card" style="margin-top:12px"><div class="row" style="gap:10px"><span style="font-size:20px">◔</span><div><div style="font-weight:700;font-size:13px">SPEED SETTING</div><div class="sub" style="font-size:12px">Normal · 80rpm</div></div></div></div>
+          <p class="muted" style="font-size:11px;font-weight:700;margin-top:14px">CURRENT INGREDIENTS</p>
+          <div class="card" style="margin-top:8px">
+            <div class="ing-row"><div class="dot" style="background:var(--orange)">🍊</div><div style="flex:1"><div style="font-size:13px;font-weight:600">Valencia Orange</div><div class="bar"><i style="width:100%"></i></div></div><span style="color:var(--green-d)">✓</span></div>
+            <div class="ing-row"><div class="dot" style="background:#c79a5b">🫚</div><div style="flex:1"><div style="font-size:13px;font-weight:600">Fresh Ginger</div><div class="bar"><i style="width:60%"></i></div></div><span class="pill-sm" style="background:#fde0c4;color:#b5641a">ACTIVE</span></div>
+          </div>
+          <p class="muted" style="font-size:11px;font-weight:700;margin-top:14px">EXTRACTED BENEFITS</p>
+          <div style="display:flex;gap:8px;margin-top:8px"><span class="pill-sm">✦ IMMUNITY BOOST</span><span class="pill-sm" style="background:#fdf0c4;color:#9a7a1a">✦ VITAMIN C</span></div>
+        </div>
+      </section>
+
+      <!-- 5. READY -->
+      <section class="screen" id="ready" data-name="İçeceğiniz Hazır!" data-nav="control">
+        <div class="wrap">
+          <div class="row between"><span class="logo">FreshPress</span><span class="avatar"></span></div>
+          <div style="text-align:center;margin-top:10px"><span class="badge">✓ FRESHLY PRESSED</span></div>
+          <div class="bottle"><div class="b"></div></div>
+          <div class="protip">🛈 <div><b>Pro-Tip:</b> Swirl gently before your first sip to redistribute natural fibers.</div></div>
+          <h1 class="h1" style="margin:18px 0 8px">Your Morning<br>Glow is ready!</h1>
+          <p class="sub">Your personalized blend of carrot, orange, and turmeric is perfectly balanced and waiting for you.</p>
+          <div id="logConfirm" style="margin-top:18px;background:#e7f1da;color:var(--green-d);border-radius:12px;padding:11px 14px;font-size:13px;font-weight:600;text-align:center">✓ 164 kcal added to today · <span style="color:var(--orange-d);text-decoration:underline;cursor:pointer" onclick="undoLog()">Undo</span></div>
+          <button class="btn btn-primary" style="margin-top:14px" onclick="go('control')">New Drink</button>
+          <button class="btn btn-ghost" style="margin-top:12px" onclick="go('calories')">Calorie Details 📊</button>
+        </div>
+      </section>
+
+      <!-- 6. STOCK -->
+      <section class="screen" id="stock" data-name="Stok Bilgisi" data-nav="stock">
+        <div class="pad">
+          <div class="row between" style="margin-top:4px">
+            <h1 style="font-size:22px;font-weight:800">Stok Bilgilerim</h1>
+            <button class="add-fab" onclick="go('stockadd')" aria-label="Stok ekle">+</button>
+          </div>
+          <div id="stockBanner"></div>
+          <div id="stockList"></div>
+          <div class="browse-cta tap" onclick="go('explore')"><span class="bt">Browse Recipes</span><span class="bs">Stoğundakilerle yapabileceğin tarifleri keşfet →</span></div>
+        </div>
+      </section>
+
+      <!-- 7. EXPLORE -->
+      <section class="screen" id="explore" data-name="Keşfet" data-nav="explore">
+        <div class="pad">
+          <div class="row between"><span class="logo">FreshPress</span><span class="avatar"></span></div>
+          <div class="search" style="margin-top:14px">🔍 Search refreshing recipes…</div>
+          <div class="row between" style="margin-top:16px"><span style="font-weight:700">Quick Categories</span><span style="color:var(--orange);font-size:12px;font-weight:700">VIEW ALL</span></div>
+          <div class="cats">
+            <div class="cat"><div class="c" style="background:#f2811d">⚡</div>Energy</div>
+            <div class="cat"><div class="c" style="background:#4fa3c7">✦</div>Immunity</div>
+            <div class="cat"><div class="c" style="background:#e6c34a">◐</div>Glow</div>
+            <div class="cat"><div class="c" style="background:#9c6bbf">◇</div>Focus</div>
+          </div>
+          <div class="sec-head"><span class="h">Popular Recipes</span></div>
+          <div id="popularList" class="hscroll"></div>
+          <div class="sec-head"><span class="h">Recommendations</span></div>
+          <div class="hscroll">
+            <div class="wide-card" onclick="openRecipe('citrus')"><div class="ph" style="background:linear-gradient(135deg,#f2a35a,#e07e1f)"></div><div class="body"><div class="t">Citrus Sunset</div><div class="d">⏱ 5 mins · 60 kcal</div><div class="m">IMMUNITY</div></div></div>
+            <div class="wide-card" onclick="openRecipe('green')"><div class="ph" style="background:linear-gradient(135deg,#7cb342,#4e7a23)"></div><div class="body"><div class="t">Green Detox</div><div class="d">⏱ 8 mins · 46 kcal</div><div class="m">DETOX</div></div></div>
+            <div class="wide-card" onclick="openRecipe('beet')"><div class="ph" style="background:linear-gradient(135deg,#7a1f3a,#c0445f)"></div><div class="body"><div class="t">Beetroot Bliss</div><div class="d">⏱ 6 mins · 84 kcal</div><div class="m">ANTIOXIDANT</div></div></div>
+            <div class="wide-card" onclick="openRecipe('morning')"><div class="ph" style="background:linear-gradient(135deg,#f6c544,#e6a017)"></div><div class="body"><div class="t">Morning Glow</div><div class="d">⏱ 7 mins · 62 kcal</div><div class="m">VITALITY</div></div></div>
+          </div>
+          <div class="sec-head"><span class="h">My Recipes</span><button class="add-recipe-btn" onclick="newRecipeStart()">+ Add Recipe</button></div>
+          <div id="myList" class="hscroll"></div>
+        </div>
+      </section>
+
+      <!-- 8. RECIPE DETAIL -->
+      <section class="screen" id="recipe" data-name="Tarif Detayı" data-nav="explore">
+        <div class="pad">
+          <div class="row between"><span class="logo">FreshPress</span><span class="avatar"></span></div>
+          <div class="detail-hero" id="rcpHero" style="margin-top:12px">—</div>
+          <div class="muted" id="rcpMeta" style="margin-top:12px;font-weight:700;font-size:13px">—</div>
+          <p class="sub" id="rcpDesc" style="margin-top:6px"></p>
+          <div class="h2">Malzemeler</div>
+          <div id="rcpIngs"></div>
+          <button class="btn btn-orange" style="margin-top:18px" onclick="selectedRecipe=viewRecipe; go('control')">⚙ Start Juicing</button>
+        </div>
+      </section>
+
+      <!-- 9. SETTINGS -->
+      <section class="screen" id="settings" data-name="Ayarlar" data-nav="settings">
+        <div class="pad">
+          <div class="row between"><span class="logo">FreshPress</span><span style="font-size:18px">🔔</span></div>
+          <h1 style="font-size:24px;font-weight:800;margin-top:12px">Settings</h1>
+          <p class="sub">Manage your experience and preferences.</p>
+          <div class="card" style="margin-top:14px;padding:4px 16px">
+            <div class="set-row tap" onclick="go('account')"><span class="ic" style="background:#8c4a22">👤</span><div><div style="font-weight:700">Account</div><div class="sub2">Profile details, password &amp; security</div></div><span class="arr">›</span></div>
+            <div class="set-row tap" onclick="go('pairing')"><span class="ic" style="background:#7cb342">🔌</span><div><div style="font-weight:700">Juicer Connection</div><div class="sub2">Manage your Smart Juicer pairing</div></div><span class="tag-conn">Connected ›</span></div>
+            <div class="set-row tap" onclick="go('notifications')"><span class="ic" style="background:#f2811d">🔔</span><div><div style="font-weight:700">Notifications</div><div class="sub2">Alerts, juice reminders &amp; updates</div></div><span class="arr">›</span></div>
+            <div class="set-row tap" style="border-bottom:none" onclick="go('help')"><span class="ic" style="background:#9c6bbf">?</span><div><div style="font-weight:700">Help &amp; Support</div><div class="sub2">FAQs, chat support &amp; guides</div></div><span class="arr">›</span></div>
+          </div>
+          <div class="h2">Preferences</div>
+          <div class="card" style="padding:14px 16px">
+            <div class="row between">
+              <div><div style="font-weight:700">Measurement Unit</div><div class="sub2">Juice volume display</div></div>
+              <div class="unit-toggle"><button class="ut on" id="utMl" onclick="setUnit('ml')">ml</button><button class="ut" id="utOz" onclick="setUnit('oz')">oz</button></div>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-dead" style="margin-top:18px">Sign Out</button>
+        </div>
+      </section>
+
+      <!-- 10. GOALS -->
+      <section class="screen" id="goals" data-name="Profil ve Hedefler" data-nav="goals">
+        <div class="pad">
+          <div class="row between"><span class="logo">FreshPress</span><span style="font-size:18px">🔔</span></div>
+          <div class="card" style="margin-top:14px">
+            <div class="row between"><span class="muted" style="font-size:11px;font-weight:700;letter-spacing:.5px">HAFTALIK KALORİ · kcal</span><span class="sub" style="font-size:12px">This Week ▾</span></div>
+            <div class="chart" style="margin-top:8px"><div class="col" style="height:40%"></div><div class="col" style="height:62%"></div><div class="col" style="height:48%"></div><div class="col" style="height:80%"></div><div class="col" style="height:55%"></div><div class="col" style="height:70%"></div><div class="col" style="height:35%"></div></div>
+            <div class="row between sub" style="font-size:11px;margin-top:6px"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span></div>
+          </div>
+          <div class="card" style="margin-top:12px"><div class="row" style="gap:10px"><span style="font-size:20px">🔥</span><div><div style="font-weight:700">5 Day Streak</div><div class="sub" style="font-size:12px">You're on a roll!</div></div></div></div>
+          <div class="h2">Daily Insights</div>
+          <div class="insight2">
+            <div class="b o"><div class="sub" style="font-size:11px">AVG. DAILY CAL</div><div style="font-size:18px;font-weight:800">1,840</div></div>
+            <div class="b g"><div class="sub" style="font-size:11px">VITAMIN C</div><div style="font-size:18px;font-weight:800">2.4L</div></div>
+          </div>
+          <div class="row between tap" style="margin-top:18px" onclick="go('weekly')"><span style="font-weight:700">History</span><span style="color:var(--orange);font-size:12px;font-weight:700">View All</span></div>
+          <div class="hist tap" onclick="openRecipe('morning')"><div class="ph" style="background:linear-gradient(135deg,#f2a35a,#e07e1f)"></div><div style="flex:1"><div style="font-weight:600">Morning Glow</div><div class="sub" style="font-size:12px">8:32 AM · 164 kcal</div></div><span class="pill-sm">Vitamin C Boost</span></div>
+          <div class="hist tap" onclick="openRecipe('green')"><div class="ph" style="background:linear-gradient(135deg,#7cb342,#4e7a23)"></div><div style="flex:1"><div style="font-weight:600">Green Detox</div><div class="sub" style="font-size:12px">12:05 PM · 112 kcal</div></div><span class="pill-sm" style="background:#fde0c4;color:#b5641a">Iron Rich</span></div>
+        </div>
+      </section>
+
+      <!-- 11. WEEKLY -->
+      <section class="screen" id="weekly" data-name="Haftalık İstatistik" data-nav="goals">
+        <div class="pad">
+          <div class="row between"><span class="logo">FreshPress</span><span style="font-size:18px">🔔</span></div>
+          <h1 style="font-size:22px;font-weight:800;margin-top:12px">History</h1>
+          <div class="card">
+            <div class="row between tap" style="padding:4px 0 2px" onclick="go('calories')"><span class="muted" style="font-size:11px;font-weight:700;letter-spacing:.5px">TODAY · JUNE 15</span><span style="color:var(--orange);font-weight:700;font-size:12px">Kalori detayı ›</span></div>
+            <div class="log-row tap" onclick="openRecipe('morning')"><div class="ph" style="background:linear-gradient(135deg,#f2a35a,#e07e1f)"></div><div><div style="font-weight:600">Morning Glow</div><div class="sub" style="font-size:12px">8:32 AM</div></div><span class="kc">164 kcal</span></div>
+            <div class="log-row tap" onclick="openRecipe('green')"><div class="ph" style="background:linear-gradient(135deg,#7cb342,#4e7a23)"></div><div><div style="font-weight:600">Green Detox</div><div class="sub" style="font-size:12px">12:05 PM</div></div><span class="kc">112 kcal</span></div>
+            <div class="row between tap" style="padding:12px 0 2px;border-top:1px solid var(--line);margin-top:8px" onclick="go('calories')"><span class="muted" style="font-size:11px;font-weight:700;letter-spacing:.5px">YESTERDAY · JUNE 14</span><span style="color:var(--orange);font-weight:700;font-size:12px">Kalori detayı ›</span></div>
+            <div class="log-row tap" onclick="openRecipe('beet')"><div class="ph" style="background:linear-gradient(135deg,#7a1f3a,#c0445f)"></div><div><div style="font-weight:600">Beetroot Bliss</div><div class="sub" style="font-size:12px">9:10 AM</div></div><span class="kc">130 kcal</span></div>
+            <div class="log-row tap" onclick="openRecipe('citrus')"><div class="ph" style="background:linear-gradient(135deg,#f2a35a,#e07e1f)"></div><div><div style="font-weight:600">Citrus Sunset</div><div class="sub" style="font-size:12px">4:25 PM</div></div><span class="kc">88 kcal</span></div>
+            <div class="row between tap" style="padding:12px 0 2px;border-top:1px solid var(--line);margin-top:8px" onclick="go('calories')"><span class="muted" style="font-size:11px;font-weight:700;letter-spacing:.5px">MONDAY · JUNE 12</span><span style="color:var(--orange);font-weight:700;font-size:12px">Kalori detayı ›</span></div>
+            <div class="log-row tap" onclick="openRecipe('morning')"><div class="ph" style="background:linear-gradient(135deg,#ef8a2c,#f6c544)"></div><div><div style="font-weight:600">Morning Glow</div><div class="sub" style="font-size:12px">8:05 AM</div></div><span class="kc">160 kcal</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 12. CALORIES -->
+      <section class="screen" id="calories" data-name="Kalori Sayacı" data-nav="goals">
+        <div class="pad">
+          <div class="row between"><span class="logo">FreshPress</span><span class="avatar"></span></div>
+          <div class="muted" style="font-size:11px;font-weight:700;letter-spacing:.5px;text-align:center;margin-top:14px">GÜNÜN KALORİ ÖZETİ</div>
+          <div class="cring" id="calRing" style="margin-top:10px"><div class="in"><div id="calTotal" style="font-size:28px;font-weight:800">0</div><div class="sub" style="font-size:10px;letter-spacing:1px">TOPLAM KCAL</div></div></div>
+          <div id="calCount" class="sub" style="text-align:center;font-size:12px;margin-top:4px"></div>
+          <div class="h2">Bugünün İçecekleri</div>
+          <div id="calList"></div>
+        </div>
+      </section>
+
+      <!-- 13. RECOMMENDATIONS -->
+      <section class="screen" id="recommend" data-name="Öneriler" data-nav="explore" data-missing="1">
+        <div class="pad">
+          <div class="miss-banner">Bu sayfa kaldırıldı — içeriği Keşfet (Explore) sayfasına taşındı</div>
+          <h1 style="font-size:24px;font-weight:800;margin-top:8px">Recommendations</h1>
+          <p class="sub">Öneriler artık ayrı bir sayfa değil. Popüler tariflerin hemen altında, Keşfet sayfasında gösteriliyor.</p>
+          <button class="btn btn-primary" style="margin-top:22px" onclick="go('explore')">→ Keşfet'e git</button>
+        </div>
+      </section>
+
+      <!-- STOCK ADD -->
+      <section class="screen" id="stockadd" data-name="Stok Ekleme" data-nav="stock" data-new="1">
+        <div class="pad">
+          <div class="new-banner">Bu ekran Figma'da yoktu — prototipte eklendi</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:4px"><span class="tap" style="color:var(--rust);font-weight:800;font-size:22px" onclick="go('stock')">‹</span><h1 style="font-size:22px;font-weight:800">Stok Ekle</h1></div>
+          <p class="sub" style="font-size:13px">Sistemdeki ürünlerden adet seç. Adedi 0'dan fazla olanlar stok listende görünür.</p>
+          <div id="stockAddList"></div>
+          <button class="btn btn-primary" style="margin-top:16px" onclick="go('stock')">Kaydet</button>
+        </div>
+      </section>
+
+      <!-- ADD RECIPE -->
+      <section class="screen" id="addrecipe" data-name="Tarif Ekle" data-nav="explore" data-new="1">
+        <div class="pad">
+          <div class="new-banner">Bu ekran Figma'da yoktu — prototipte eklendi</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:4px"><span class="tap" style="color:var(--rust);font-weight:800;font-size:22px" onclick="go('explore')">‹</span><h1 style="font-size:22px;font-weight:800">Add Recipe</h1></div>
+          <div class="cover" id="newCover"><span class="pencil" aria-hidden="true">✎</span></div>
+          <div class="field"><label>Başlık</label><input id="newTitle" placeholder="Tarif adı" oninput="recalcNew()"></div>
+          <div class="field"><label>Açıklama (opsiyonel)</label><textarea id="newDesc" rows="2" placeholder="Kısa açıklama"></textarea></div>
+          <div class="cal-card"><div class="big" id="newCal">0 kcal</div><div class="lbl">ortalama · malzemelere göre otomatik hesaplanır</div></div>
+          <p class="muted" style="font-size:11px;font-weight:700;margin-top:16px">MALZEMELER (adet)</p>
+          <div id="newIngs"></div>
+          <button class="btn btn-primary" style="margin-top:16px" onclick="saveRecipe()">Kaydet</button>
+        </div>
+      </section>
+
+      <!-- MISSING SCREENS (red frame) -->
+      <section class="screen" id="login" data-name="Login" data-nav="none" data-missing="1">
+        <div class="pad">
+          <div class="miss-banner">Bu ekran henüz tasarlanmadı — placeholder</div>
+          <div class="row between"><span class="logo">FreshPress</span></div>
+          <h1 style="font-size:24px;font-weight:800;margin-top:18px">Log In</h1>
+          <p class="sub">Kesik çizgili (henüz çizilmemiş) ekran. Figma'da tasarlanacak.</p>
+          <button class="btn btn-primary" style="margin-top:22px" onclick="go('pairing')">Devam → Cihaz Eşleştirme</button>
+          <button class="btn btn-ghost" style="margin-top:12px" onclick="go('welcome')">← Hoş Geldiniz</button>
+        </div>
+      </section>
+
+      <section class="screen" id="account" data-name="Account" data-nav="settings" data-missing="1">
+        <div class="pad">
+          <div class="miss-banner">Bu ekran henüz tasarlanmadı — placeholder</div>
+          <h1 style="font-size:24px;font-weight:800;margin-top:8px">Account</h1>
+          <p class="sub">Profile details, password &amp; security. Henüz tasarlanmadı.</p>
+          <button class="btn btn-ghost" style="margin-top:22px" onclick="go('settings')">← Ayarlar</button>
+        </div>
+      </section>
+
+      <section class="screen" id="notifications" data-name="Notifications" data-nav="settings" data-missing="1">
+        <div class="pad">
+          <div class="miss-banner">Bu ekran henüz tasarlanmadı — placeholder</div>
+          <h1 style="font-size:24px;font-weight:800;margin-top:8px">Notifications</h1>
+          <p class="sub">Alerts, juice reminders &amp; updates. Henüz tasarlanmadı.</p>
+          <button class="btn btn-ghost" style="margin-top:22px" onclick="go('settings')">← Ayarlar</button>
+        </div>
+      </section>
+
+      <section class="screen" id="help" data-name="Help & Support" data-nav="settings" data-missing="1">
+        <div class="pad">
+          <div class="miss-banner">Bu ekran henüz tasarlanmadı — placeholder</div>
+          <h1 style="font-size:24px;font-weight:800;margin-top:8px">Help &amp; Support</h1>
+          <p class="sub">FAQs, chat support &amp; guides. Henüz tasarlanmadı.</p>
+          <button class="btn btn-ghost" style="margin-top:22px" onclick="go('settings')">← Ayarlar</button>
+        </div>
+      </section>
+
+    </div>
+    <div class="toast" id="toast"></div>
+  </div>
+</div>
+
+<!-- jump menu -->
+<div class="jump" id="jump" onclick="if(event.target.id==='jump')toggleJump()">
+  <div class="panel">
+    <h3>Tüm ekranlar</h3>
+    <div class="pmut">İstediğin ekrana atla — Figma isimleri (kırmızı = henüz tasarlanmadı · mavi = Figma'da yoktu, eklendi)</div>
+    <div id="jumpList"></div>
+  </div>
+</div>
+
+<script>
+var ORDER = ['welcome','pairing','control','deviceinfo','preparing','ready','stock','stockadd','explore','recipe','addrecipe','recommend','settings','goals','weekly','calories','login','account','notifications','help'];
+
+var NAV = [
+  {key:'explore',  target:'explore', label:'Explore',      icon:'<circle cx="11" cy="11" r="7"/><line x1="16" y1="16" x2="21" y2="21"/>'},
+  {key:'stock',    target:'stock',   label:'Stock',        icon:'<rect x="4" y="5" width="16" height="15" rx="2"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/>'},
+  {key:'control',  target:'control', label:'Smart Juicer', center:true, icon:'<path d="M12 3c4 5 5 8 5 11a5 5 0 0 1-10 0c0-3 1-6 5-11z"/>'},
+  {key:'goals',    target:'goals',   label:'İstatistik',   icon:'<line x1="6" y1="20" x2="6" y2="11"/><line x1="12" y1="20" x2="12" y2="5"/><line x1="18" y1="20" x2="18" y2="14"/>'},
+  {key:'settings', target:'settings',label:'Profile',      icon:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>'}
+];
+
+function svg(inner){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+inner+'</svg>';}
+
+function buildNav(){
+  document.querySelectorAll('.screen[data-nav]').forEach(function(sc){
+    var active = sc.getAttribute('data-nav');
+    var nav = document.createElement('div');
+    nav.className = 'nav';
+    NAV.forEach(function(n){
+      if(n.center){
+        nav.innerHTML += '<div class="item center" onclick="go(\''+n.target+'\')"><div class="pill">'+svg(n.icon)+'</div><span>'+n.label+'</span></div>';
+      } else {
+        nav.innerHTML += '<div class="item '+(active===n.key?'on':'')+'" onclick="go(\''+n.target+'\')">'+svg(n.icon)+'<span>'+n.label+'</span></div>';
+      }
+    });
+    sc.appendChild(nav);
+  });
+}
+
+/* preparing auto-advance */
+var prep = {timer:null, pct:65, paused:false};
+function startPrep(){ pendingJuice=true; prep.pct=65; prep.paused=false; setPauseLabel(); updateRing(); clearInterval(prep.timer);
+  prep.timer=setInterval(function(){
+    if(prep.paused) return;
+    prep.pct+=5;
+    if(prep.pct>=100){ prep.pct=100; updateRing(); clearInterval(prep.timer);
+      setTimeout(function(){ if(document.getElementById('preparing').classList.contains('active')) go('ready'); }, 450); return; }
+    updateRing();
+  }, 380);
+}
+function stopPrep(){ clearInterval(prep.timer); }
+function updateRing(){
+  var r=document.getElementById('prepRing'), p=document.getElementById('prepPct');
+  if(r) r.style.background='conic-gradient(#f2811d 0 '+prep.pct+'%, #efe9e0 '+prep.pct+'% 100%)';
+  if(p) p.textContent=prep.pct+'%';
+}
+function togglePause(){ prep.paused=!prep.paused; setPauseLabel(); }
+function setUnit(u){ var ml=document.getElementById('utMl'), oz=document.getElementById('utOz'); if(!ml||!oz) return; ml.classList.toggle('on', u==='ml'); oz.classList.toggle('on', u==='oz'); }
+function setPauseLabel(){ var b=document.getElementById('pauseBtn'); if(b) b.innerHTML = prep.paused ? '▶ Resume' : '⏸ Pause'; }
+
+/* extraction speed (göstermelik) */
+var speeds=['Low','Medium','High'], speedPos=['12%','50%','88%'], si=1;
+function cycleSpeed(){ si=(si+1)%3; var l=document.getElementById('speedLabel'), t=document.getElementById('speedThumb');
+  if(l) l.textContent=speeds[si]; if(t) t.style.left=speedPos[si]; }
+
+/* stock model */
+var STOCK = [
+  {key:'elma',     name:'Elma',     cat:'Meyveler', color:'linear-gradient(135deg,#7cb342,#4e7a23)', qty:4},
+  {key:'portakal', name:'Portakal', cat:'Meyveler', color:'linear-gradient(135deg,#f2a35a,#e07e1f)', qty:6},
+  {key:'muz',      name:'Muz',      cat:'Meyveler', color:'linear-gradient(135deg,#f6c544,#e6a017)', qty:0},
+  {key:'ananas',   name:'Ananas',   cat:'Meyveler', color:'linear-gradient(135deg,#f2c14e,#cf9a1e)', qty:0},
+  {key:'limon',    name:'Limon',    cat:'Meyveler', color:'linear-gradient(135deg,#f4e05a,#d4bb18)', qty:3},
+  {key:'cilek',    name:'Çilek',    cat:'Meyveler', color:'linear-gradient(135deg,#d8425f,#a3243e)', qty:0},
+  {key:'havuc',    name:'Havuç',    cat:'Sebzeler', color:'linear-gradient(135deg,#ef8a2c,#c2641a)', qty:5},
+  {key:'salatalik',name:'Salatalık',cat:'Sebzeler', color:'linear-gradient(135deg,#8fc24a,#5a8a25)', qty:0},
+  {key:'kereviz',  name:'Kereviz',  cat:'Sebzeler', color:'linear-gradient(135deg,#9fce5e,#6a9a2f)', qty:0},
+  {key:'ispanak',  name:'Ispanak',  cat:'Sebzeler', color:'linear-gradient(135deg,#5a8f2a,#37610f)', qty:0},
+  {key:'pancar',   name:'Pancar',   cat:'Sebzeler', color:'linear-gradient(135deg,#9e2f4f,#6a1d34)', qty:0},
+  {key:'maydanoz', name:'Maydanoz', cat:'Sebzeler', color:'linear-gradient(135deg,#6fae3a,#3f6b1f)', qty:1}
+];
+var lastUsed='', pendingJuice=false, activeRecipe=null, selectedRecipe=null;
+var CAL = {elma:95, portakal:62, muz:105, ananas:80, limon:17, cilek:4, havuc:25, salatalik:30, kereviz:6, ispanak:7, pancar:35, maydanoz:4};
+var RECIPES = {
+  morning:{label:'Morning Glow', desc:'Havuç ve portakalın tatlı dengesi.', color:'linear-gradient(135deg,#ef8a2c,#f6c544)', items:{havuc:2, portakal:2}, mine:false},
+  green:{label:'Green Detox', desc:'Ispanak, salatalık ve limonla hafif başlangıç.', color:'linear-gradient(135deg,#3f6b1f,#7cb342)', items:{ispanak:1, salatalik:1, limon:1}, mine:false},
+  beet:{label:'Beetroot Bliss', desc:'Pancar ve elmayla antioksidan deposu.', color:'linear-gradient(135deg,#7a1f3a,#c0445f)', items:{pancar:1, elma:1}, mine:false},
+  citrus:{label:'Citrus Sunset', desc:'Portakal ve limonla C vitamini patlaması.', color:'linear-gradient(135deg,#f2a35a,#e07e1f)', items:{portakal:3, limon:1}, mine:false},
+  mymix:{label:'Benim Karışımım', desc:'Elma ve limon, sade ve ferah.', color:'linear-gradient(135deg,#9c6bbf,#5e3f7a)', items:{elma:1, limon:1}, mine:true}
+};
+var viewRecipe='morning', newQty={}, newCoverColor=null;
+
+function recipeCal(items){ var t=0; for(var k in items) t+=(CAL[k]||0)*items[k]; return t; }
+
+function findStock(k){ for(var i=0;i<STOCK.length;i++) if(STOCK[i].key===k) return STOCK[i]; return null; }
+
+function applyJuiceDecrement(){
+  if(!activeRecipe) return;
+  var r=RECIPES[activeRecipe]; activeRecipe=null; selectedRecipe=null;
+  if(!r) return;
+  var used=[];
+  for(var k in r.items){ var it=findStock(k); if(it){ var d=Math.min(r.items[k], it.qty); if(d>0){ it.qty-=d; used.push(d+' '+it.name); } } }
+  if(used.length) lastUsed=used.join(', ');
+}
+
+function renderStock(){
+  var list=document.getElementById('stockList'), banner=document.getElementById('stockBanner');
+  banner.innerHTML = lastUsed ? '<div class="stk-banner"><b>Son sıkımda kullanıldı:</b> '+lastUsed+' — stok otomatik güncellendi.</div>' : '';
+  var cats=['Meyveler','Sebzeler'], html='', any=false;
+  cats.forEach(function(cat){
+    var rows='';
+    STOCK.forEach(function(it){
+      if(it.cat===cat && it.qty>0){
+        any=true;
+        if(it.qty<=2){
+          rows+='<div class="stk-row"><span class="stk-ic" style="background:'+it.color+'"></span><span class="stk-name">'+it.name+'</span><span class="stk-low"><span class="low-badge">az kaldı</span><span class="stk-qty">'+it.qty+'</span></span></div>';
+        } else {
+          rows+='<div class="stk-row"><span class="stk-ic" style="background:'+it.color+'"></span><span class="stk-name">'+it.name+'</span><span class="stk-qty">'+it.qty+'</span></div>';
+        }
+      }
+    });
+    if(rows) html+='<div class="stk-group"><p class="muted" style="font-size:11px;font-weight:700">'+cat.toUpperCase()+'</p>'+rows+'</div>';
+  });
+  list.innerHTML = any ? html : '<div class="empty">Stokta ürün yok.<br>Sağ üstteki + ile ekle.</div>';
+}
+
+function renderStockAdd(){
+  var list=document.getElementById('stockAddList'), cats=['Meyveler','Sebzeler'], html='';
+  cats.forEach(function(cat){
+    var rows='';
+    STOCK.forEach(function(it){
+      if(it.cat===cat){
+        rows+='<div class="stk-row"><span class="stk-ic" style="background:'+it.color+'"></span><span class="stk-name">'+it.name+'</span>'+
+              '<span class="stepper"><button onclick="stepStock(\''+it.key+'\',-1)">−</button><span class="n" id="n-'+it.key+'">'+it.qty+'</span><button class="plus" onclick="stepStock(\''+it.key+'\',1)">+</button></span></div>';
+      }
+    });
+    html+='<div class="stk-group"><p class="muted" style="font-size:11px;font-weight:700">'+cat.toUpperCase()+'</p>'+rows+'</div>';
+  });
+  list.innerHTML = html;
+}
+
+function stepStock(k,delta){
+  var it=findStock(k); if(!it) return;
+  it.qty=Math.max(0,it.qty+delta);
+  var n=document.getElementById('n-'+k); if(n) n.textContent=it.qty;
+}
+
+function canMake(key){
+  var r=RECIPES[key], missing=[];
+  for(var k in r.items){ var it=findStock(k), have=it?it.qty:0; if(have<r.items[k]) missing.push((r.items[k]-have)+' '+(it?it.name:k)); }
+  return {ok:missing.length===0, missing:missing};
+}
+function renderControl(){
+  var box=document.getElementById('selRecipe'); if(!box) return;
+  if(selectedRecipe && RECIPES[selectedRecipe]){
+    var r=RECIPES[selectedRecipe];
+    var items=Object.keys(r.items).map(function(k){ var s=findStock(k); return r.items[k]+' '+(s?s.name:k); }).join(', ');
+    box.innerHTML='<div class="row between"><div><div style="font-size:11px;color:var(--rust);font-weight:700">SEÇİLİ TARİF</div><div style="font-weight:800">'+r.label+'</div><div class="sub" style="font-size:12px">'+items+'</div></div><span class="tap" style="color:var(--mut);font-size:22px;line-height:1" onclick="clearRecipe()">×</span></div>';
+  } else {
+    box.innerHTML='<div class="row between"><div><div style="font-weight:700">Tarif seçilmedi</div><div class="sub" style="font-size:12px">Manuel sıkım — stok değişmez</div></div><span class="tap" style="color:var(--orange);font-weight:700;font-size:13px" onclick="go(\'explore\')">Tarif seç ›</span></div>';
+  }
+}
+function clearRecipe(){ selectedRecipe=null; renderControl(); }
+function startJuicing(){
+  if(selectedRecipe){
+    var chk=canMake(selectedRecipe);
+    if(!chk.ok){ showToast('Yetersiz stok: '+chk.missing.join(', ')+' eksik'); return; }
+    activeRecipe=selectedRecipe;
+  } else { activeRecipe=null; }
+  go('preparing');
+}
+function showToast(msg){ var t=document.getElementById('toast'); if(!t) return; t.textContent=msg; t.classList.add('show'); clearTimeout(window._tt); window._tt=setTimeout(function(){t.classList.remove('show');},2800); }
+
+function resetLog(){ var el=document.getElementById('logConfirm'); if(!el) return; el.style.background='#e7f1da'; el.style.color='var(--green-d)'; el.innerHTML='✓ 164 kcal added to today · <span style="color:var(--orange-d);text-decoration:underline;cursor:pointer" onclick="undoLog()">Undo</span>'; }
+function undoLog(){ var el=document.getElementById('logConfirm'); if(el){ el.style.background='#f3efe7'; el.style.color='var(--mut)'; el.innerHTML='Not logged · guest serving'; } showToast('Calorie logging undone'); }
+
+var todayLog = [
+  {key:'morning', time:'8:32 AM',  color:'#ef8a2c'},
+  {key:'green',   time:'12:05 PM', color:'#7cb342'},
+  {key:'beet',    time:'3:40 PM',  color:'#a3243e'}
+];
+function renderCalories(){
+  var total=0; todayLog.forEach(function(e){ e.kcal=recipeCal(RECIPES[e.key].items); total+=e.kcal; });
+  var stops=[], acc=0;
+  todayLog.forEach(function(e){ var s=total?acc/total*100:0; acc+=e.kcal; var en=total?acc/total*100:0; stops.push(e.color+' '+s.toFixed(1)+'% '+en.toFixed(1)+'%'); });
+  var ring=document.getElementById('calRing'); if(ring) ring.style.background = total ? 'conic-gradient('+stops.join(',')+')' : '#efe9e0';
+  var t=document.getElementById('calTotal'); if(t) t.textContent=total;
+  var c=document.getElementById('calCount'); if(c) c.textContent=todayLog.length+' içecek · halka tariflere göre bölünmüştür';
+  var list=document.getElementById('calList'); if(!list) return;
+  var html='';
+  todayLog.forEach(function(e){ var r=RECIPES[e.key]; var pct=total?Math.round(e.kcal/total*100):0;
+    html+='<div class="log-row tap" onclick="openRecipe(\''+e.key+'\')"><div class="ph" style="background:'+r.color+'"></div><div><div style="font-weight:600">'+r.label+'</div><div class="sub" style="font-size:12px">'+e.time+' · günün %'+pct+'\u2019i</div></div><span class="kc">'+e.kcal+' kcal</span></div>'; });
+  list.innerHTML=html;
+}
+
+function recipeCard(key){
+  var r=RECIPES[key];
+  return '<div class="wide-card" onclick="openRecipe(\''+key+'\')"><div class="ph" style="background:'+r.color+'"></div><div class="body"><div class="t">'+r.label+'</div><div class="d">'+(r.desc||'')+'</div><div class="m">≈ '+recipeCal(r.items)+' kcal · '+Object.keys(r.items).length+' malzeme</div></div></div>';
+}
+function renderExplore(){
+  var pop='', mine='';
+  for(var k in RECIPES){ if(RECIPES[k].mine) mine+=recipeCard(k); else pop+=recipeCard(k); }
+  document.getElementById('popularList').innerHTML=pop;
+  document.getElementById('myList').innerHTML = mine || '<div class="empty" style="flex:0 0 100%">Henüz tarifin yok. + Add Recipe ile oluştur.</div>';
+}
+function openRecipe(key){ viewRecipe=key; go('recipe'); }
+function renderRecipe(){
+  var r=RECIPES[viewRecipe]; if(!r) return;
+  var hero=document.getElementById('rcpHero'); hero.textContent=r.label; hero.style.background=r.color;
+  document.getElementById('rcpMeta').textContent='≈ '+recipeCal(r.items)+' kcal (ortalama) · '+Object.keys(r.items).length+' çeşit malzeme';
+  document.getElementById('rcpDesc').textContent=r.desc||'';
+  var html='';
+  for(var k in r.items){ var s=findStock(k), nm=s?s.name:k, c=(CAL[k]||0)*r.items[k];
+    html+='<div class="stk-row"><span class="stk-ic" style="background:'+(s?s.color:'#ccc')+'"></span><span class="stk-name">'+nm+'</span><span class="muted" style="margin-left:auto">'+r.items[k]+' adet · '+c+' kcal</span></div>'; }
+  document.getElementById('rcpIngs').innerHTML=html;
+}
+
+function newRecipeStart(){
+  newQty={};
+  var colors=['linear-gradient(135deg,#3f6b1f,#6ba12f)','linear-gradient(135deg,#7a1f3a,#c0445f)','linear-gradient(135deg,#f2a35a,#e07e1f)','linear-gradient(135deg,#9c6bbf,#5e3f7a)','linear-gradient(135deg,#1d9e9e,#0f6e6e)','linear-gradient(135deg,#185fa5,#378add)'];
+  newCoverColor=colors[Math.floor(Math.random()*colors.length)];
+  go('addrecipe');
+  document.getElementById('newTitle').value='';
+  document.getElementById('newDesc').value='';
+}
+function renderNewIngs(){
+  document.getElementById('newCover').style.background=newCoverColor||'linear-gradient(135deg,#3f6b1f,#6ba12f)';
+  var cats=['Meyveler','Sebzeler'], html='';
+  cats.forEach(function(cat){
+    var rows='';
+    STOCK.forEach(function(it){ if(it.cat===cat){ var q=newQty[it.key]||0, c=(CAL[it.key]||0)*q;
+      rows+='<div class="ing-add-row"><span class="ic" style="background:'+it.color+'"></span><span style="flex:1"><span class="nm">'+it.name+'</span><br><span class="kc">'+(CAL[it.key]||0)+' kcal/adet'+(q>0?' · '+c+' kcal':'')+'</span></span><span class="stepper"><button onclick="stepNew(\''+it.key+'\',-1)">−</button><span class="n" id="nn-'+it.key+'">'+q+'</span><button class="plus" onclick="stepNew(\''+it.key+'\',1)">+</button></span></div>'; } });
+    html+='<div class="stk-group"><p class="muted" style="font-size:11px;font-weight:700">'+cat.toUpperCase()+'</p>'+rows+'</div>';
+  });
+  document.getElementById('newIngs').innerHTML=html;
+  recalcNew();
+}
+function stepNew(k,d){ newQty[k]=Math.max(0,(newQty[k]||0)+d); renderNewIngs(); }
+function recalcNew(){ var t=0; for(var k in newQty) t+=(CAL[k]||0)*newQty[k]; var el=document.getElementById('newCal'); if(el) el.textContent=t+' kcal'; }
+function saveRecipe(){
+  var title=document.getElementById('newTitle').value.trim();
+  var items={}; for(var k in newQty){ if(newQty[k]>0) items[k]=newQty[k]; }
+  if(!title){ showToast('Lütfen bir başlık gir'); return; }
+  if(!Object.keys(items).length){ showToast('En az bir malzeme ekle'); return; }
+  RECIPES['user_'+Date.now()]={label:title, desc:document.getElementById('newDesc').value.trim(), color:newCoverColor||'linear-gradient(135deg,#3f6b1f,#6ba12f)', items:items, mine:true};
+  go('explore');
+}
+
+function go(id){
+  stopPrep();
+  var el = document.getElementById(id); if(!el) return;
+  if(id==='ready' && pendingJuice){ applyJuiceDecrement(); pendingJuice=false; }
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  el.classList.add('active');
+  var missing = el.getAttribute('data-missing')==='1';
+  var isnew = el.getAttribute('data-new')==='1';
+  document.getElementById('viewport').classList.toggle('missing', missing);
+  document.getElementById('viewport').classList.toggle('isnew', isnew);
+  var fn = document.getElementById('frameName');
+  fn.textContent = el.getAttribute('data-name');
+  fn.classList.toggle('miss', missing);
+  fn.classList.toggle('isnew', isnew);
+  document.getElementById('scroll').scrollTop = 0;
+  document.getElementById('jump').classList.remove('open');
+  if(id==='preparing') startPrep();
+  if(id==='ready') resetLog();
+  if(id==='control') renderControl();
+  if(id==='stock') renderStock();
+  if(id==='stockadd') renderStockAdd();
+  if(id==='explore') renderExplore();
+  if(id==='recipe') renderRecipe();
+  if(id==='calories') renderCalories();
+  if(id==='addrecipe') renderNewIngs();
+}
+
+function toggleJump(){ document.getElementById('jump').classList.toggle('open'); }
+
+function buildJumpList(){
+  var list = document.getElementById('jumpList');
+  ORDER.forEach(function(id, i){
+    var el = document.getElementById(id);
+    var name = el.getAttribute('data-name');
+    var miss = el.getAttribute('data-missing')==='1';
+    var isnew = el.getAttribute('data-new')==='1';
+    var d = document.createElement('div');
+    d.className = 'ji' + (miss?' miss':'') + (isnew?' isnew':'');
+    d.onclick = function(){ go(id); };
+    d.innerHTML = '<span style="display:flex;align-items:center"><span class="num">'+(i+1)+'</span><span class="nm">'+name+(miss?' •':'')+(isnew?' +':'')+'</span></span><span class="en">'+id+'</span>';
+    list.appendChild(d);
+  });
+}
+
+buildNav();
+buildJumpList();
+go('welcome');
+</script>
+</body>
+</html>

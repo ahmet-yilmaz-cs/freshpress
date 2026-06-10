@@ -13,6 +13,7 @@ type AuthContextValue = AuthState & {
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   appleSignIn: () => Promise<void>;
+  updateProfile: (input: { name?: string; email?: string }) => Promise<void>;
   logout: () => Promise<void>;
 };
 
@@ -58,6 +59,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       async appleSignIn() {
         const { user, tokens } = await api.appleSignIn();
         await persist(tokens);
+        setState({ user, status: 'authenticated' });
+      },
+      async updateProfile(input) {
+        if (!state.user) return;
+        const { user } = await api.updateProfile(state.user.id, input);
         setState({ user, status: 'authenticated' });
       },
       async logout() {

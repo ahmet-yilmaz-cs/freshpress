@@ -11,7 +11,10 @@ import type {
   ApiError,
   AuthResponse,
   CalorieDay,
+  CreateRecipeInput,
   Device,
+  DeviceDetails,
+  HelpTopic,
   JuiceHistoryEntry,
   JuiceProgram,
   Notification,
@@ -22,22 +25,29 @@ import type {
 } from '@freshpress/types';
 import {
   authenticate,
+  addCustomRecipe,
   createRuntimeUser,
   findUserByEmail,
   findUserById,
   getCalories,
   getGoals,
+  getDeviceDetails,
+  getHelpTopics,
   getHistory,
   getNotifications,
+  getRecipeById,
+  getStock,
   programs as allPrograms,
   publicUser,
   recipes as allRecipes,
   recommendations as allRecommendations,
   setDeviceConnected,
+  setDeviceSpeed,
+  setStockAmount,
+  updateUserProfile,
   getDevice,
-  stock as allStock,
 } from '@freshpress/data';
-import type { WeeklyGoals } from '@freshpress/types';
+import type { ExtractionSpeed, WeeklyGoals } from '@freshpress/types';
 import { sleep } from '@freshpress/utils';
 
 export class RequestError extends Error {
@@ -120,14 +130,46 @@ export const api = {
     return { device: getDevice(token) };
   },
 
+  async deviceDetails(token: string): Promise<{ details: DeviceDetails }> {
+    await sleep(LATENCY);
+    return { details: getDeviceDetails(token) };
+  },
+
   async pairDevice(token: string, connected: boolean): Promise<{ device: Device }> {
     await sleep(LATENCY);
     return { device: setDeviceConnected(token, connected) };
   },
 
+  async setSpeed(token: string, speed: ExtractionSpeed): Promise<{ device: Device }> {
+    await sleep(LATENCY);
+    return { device: setDeviceSpeed(token, speed) };
+  },
+
+  async updateProfile(
+    token: string,
+    input: { name?: string; email?: string },
+  ): Promise<{ user: User }> {
+    await sleep(LATENCY);
+    const user = updateUserProfile(token, input);
+    if (!user) {
+      throw new RequestError({ error: 'unauthorized', message: 'Session expired' }, 401);
+    }
+    return { user };
+  },
+
   async recipes(): Promise<{ recipes: Recipe[] }> {
     await sleep(LATENCY);
     return { recipes: allRecipes };
+  },
+
+  async recipe(id: string): Promise<{ recipe: Recipe | null }> {
+    await sleep(LATENCY);
+    return { recipe: getRecipeById(id) };
+  },
+
+  async addRecipe(input: CreateRecipeInput): Promise<{ recipe: Recipe }> {
+    await sleep(LATENCY);
+    return { recipe: addCustomRecipe(input) };
   },
 
   async history(token: string): Promise<{ history: JuiceHistoryEntry[] }> {
@@ -157,11 +199,22 @@ export const api = {
 
   async stock(): Promise<{ stock: StockItem[] }> {
     await sleep(LATENCY);
-    return { stock: allStock };
+    return { stock: getStock() };
+  },
+
+  async updateStockItem(id: string, amount: number): Promise<{ stock: StockItem[] }> {
+    await sleep(LATENCY);
+    setStockAmount(id, amount);
+    return { stock: getStock() };
   },
 
   async recommendations(): Promise<{ recommendations: Recommendation[] }> {
     await sleep(LATENCY);
     return { recommendations: allRecommendations };
+  },
+
+  async helpTopics(): Promise<{ topics: HelpTopic[] }> {
+    await sleep(LATENCY);
+    return { topics: getHelpTopics() };
   },
 };

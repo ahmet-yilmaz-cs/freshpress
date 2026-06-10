@@ -6,3 +6,4 @@ export { Input } from './Input';
 export { Screen } from './Screen';
 export { BackBar } from './BackBar';
 export { AppleButton } from './AppleButton';
+export { AppleLogo } from './AppleLogo';

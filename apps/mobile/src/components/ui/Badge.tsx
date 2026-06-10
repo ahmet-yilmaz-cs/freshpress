@@ -22,7 +22,9 @@ export function Badge({
 }) {
   const t = tones[tone];
   return (
-    <View className={cn('flex-row items-center self-start rounded-full px-3 py-1', t.bg, className)}>
+    <View
+      className={cn('flex-row items-center self-start rounded-full px-3 py-1', t.bg, className)}
+    >
       <Text variant="eyebrow" className={t.text}>
         {label}
       </Text>

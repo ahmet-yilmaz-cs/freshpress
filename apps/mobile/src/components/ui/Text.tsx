@@ -5,7 +5,7 @@ import { cn } from '../../lib/cn';
 type Variant = 'display' | 'h2' | 'h3' | 'body' | 'button' | 'eyebrow' | 'caption';
 
 const variants: Record<Variant, string> = {
-  display: 'font-extrabold text-[40px] leading-[48px] tracking-[-1px] text-ink',
+  display: 'font-extrabold text-[40px] leading-[48px] tracking-normal text-ink',
   h2: 'font-bold text-[32px] leading-[40px] text-ink',
   h3: 'font-semibold text-[20px] leading-[28px] text-ink',
   body: 'font-sans text-[16px] leading-[24px] text-muted',

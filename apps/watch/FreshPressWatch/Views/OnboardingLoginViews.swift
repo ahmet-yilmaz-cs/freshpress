@@ -3,29 +3,28 @@ import SwiftUI
 // MARK: - Onboarding "Hoş Geldin"
 struct OnboardingView: View {
     @Binding var onboarded: Bool
+    @EnvironmentObject var store: JuicerStore
 
     var body: some View {
-        ScrollView {
+        WatchScreen(showsBack: false) {
             VStack(spacing: 8) {
                 LogoMark(size: 56)
                     .padding(.top, 6)
-                Text("Hoş Geldin")
+                Text(store.t("welcome"))
                     .font(.fp(18, .bold))
                     .foregroundStyle(Theme.textPrimary)
-                Text("Bileğinden sıkım başlat ve takip et")
+                Text(store.t("onboardingSubtitle"))
                     .font(.fp(9))
                     .foregroundStyle(Theme.textSecondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 6)
 
-                PrimaryButton(title: "Başla") { onboarded = true }
+                PrimaryButton(title: store.t("startIntro")) { onboarded = true }
                     .padding(.top, 6)
-                TextButton(title: "Atla") { onboarded = true }
+                TextButton(title: store.t("skip")) { onboarded = true }
             }
-            .padding(.horizontal, 12)
             .frame(maxWidth: .infinity)
         }
-        .background(Theme.bg)
     }
 }
 
@@ -34,24 +33,40 @@ struct LoginView: View {
     @EnvironmentObject var store: JuicerStore
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 8) {
-                LogoMark(size: 48)
-                    .padding(.top, 4)
-                Text("Giriş Yap")
-                    .font(.fp(18, .bold))
-                    .foregroundStyle(Theme.textPrimary)
-                Text("FreshPress hesabını bağla")
-                    .font(.fp(9))
+        WatchScreen(showsBack: false) {
+            VStack(spacing: 6) {
+                HStack(spacing: 8) {
+                    LogoMark(size: 30)
+                    Text(store.t("login"))
+                        .font(.fp(16, .bold))
+                        .foregroundStyle(Theme.textPrimary)
+                }
+                Text(store.t("connectAccount"))
+                    .font(.fp(8))
                     .foregroundStyle(Theme.textSecondary)
 
-                PrimaryButton(title: "Telefonla Eşitle") { store.authenticate() }
-                    .padding(.top, 6)
-                AppleSignInButton { store.authenticate() }
+                Card {
+                    HStack(spacing: 8) {
+                        StatusDot(connected: true, tint: Theme.green)
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(store.account.name)
+                                .font(.fp(11, .bold))
+                                .foregroundStyle(Theme.textPrimary)
+                            Text(store.account.lastSync)
+                                .font(.fp(8, .semibold))
+                                .foregroundStyle(Theme.green)
+                        }
+                        Spacer(minLength: 4)
+                        Text(store.t("mock"))
+                            .font(.fp(8, .bold))
+                            .foregroundStyle(Theme.textSecondary)
+                    }
+                }
+
+                PrimaryButton(title: store.t("syncPhone")) { store.authenticateWithPhone() }
+                AppleSignInButton(title: store.t("appleSignIn")) { store.authenticateWithApple() }
             }
-            .padding(.horizontal, 12)
             .frame(maxWidth: .infinity)
         }
-        .background(Theme.bg)
     }
 }

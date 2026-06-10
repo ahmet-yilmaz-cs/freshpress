@@ -31,6 +31,33 @@ apps/api/freshpress.db
 .env.local
 *.local
 
+# xcode / native build artifacts
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.hmap
+*.dSYM
+*.dSYM.zip
+*.moved-aside
+# xcodegen regenerates the watch project from project.yml
+apps/watch/*.xcodeproj/
+
+# secrets / signing (never commit real keys or service accounts)
+*.pem
+*.cer
+*.certSigningRequest
+secrets.json
+service-account*.json
+google-services.json
+GoogleService-Info.plist
+
+# editor / os
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+
 # misc
 .DS_Store
 *.log

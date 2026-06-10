@@ -1,10 +1,13 @@
-import { Apple } from 'lucide-react-native';
-import { ActivityIndicator, Pressable, View } from 'react-native';
+import { ActivityIndicator, Pressable } from 'react-native';
 
+import { colors } from '@freshpress/design-system';
+
+import { t } from '../../i18n/strings';
 import { cn } from '../../lib/cn';
+import { AppleLogo } from './AppleLogo';
 import { Text } from './Text';
 
-/** Mock "Continue with Apple" — black pill with the Apple glyph. */
+/** Mock "Continue with Apple" — black pill with the official Apple logo. */
 export function AppleButton({
   onPress,
   loading = false,
@@ -17,21 +20,22 @@ export function AppleButton({
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityLabel={t.welcome.apple}
       disabled={loading}
       onPress={onPress}
       className={cn(
-        'h-[60px] flex-row items-center justify-center gap-2 rounded-full bg-black px-6 active:opacity-90',
+        'h-[60px] flex-row items-center justify-center gap-2.5 rounded-full bg-black px-6 active:opacity-90',
         loading && 'opacity-60',
         className,
       )}
     >
       {loading ? (
-        <ActivityIndicator color="#fff" />
+        <ActivityIndicator color={colors.white} />
       ) : (
-        <Apple size={22} color="#fff" fill="#fff" />
+        <AppleLogo size={20} color={colors.white} />
       )}
       <Text variant="button" className="text-white">
-        Continue with Apple
+        {t.welcome.apple}
       </Text>
     </Pressable>
   );

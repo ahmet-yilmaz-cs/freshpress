@@ -1,5 +1,7 @@
 import { ActivityIndicator, Pressable, type PressableProps, View } from 'react-native';
 
+import { colors } from '@freshpress/design-system';
+
 import { cn } from '../../lib/cn';
 import { Text } from './Text';
 
@@ -48,7 +50,9 @@ export function Button({
       {...props}
     >
       <View className="flex-row items-center gap-2">
-        {loading && <ActivityIndicator color={variant === 'primary' ? '#fff' : '#954a00'} />}
+        {loading && (
+          <ActivityIndicator color={variant === 'primary' ? colors.white : colors.amber} />
+        )}
         <Text variant="button" className={label[variant]}>
           {title}
         </Text>

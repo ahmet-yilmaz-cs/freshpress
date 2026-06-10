@@ -22,6 +22,8 @@ module.exports = {
         track: '#e2e2e2',
         'border-warm': '#dec1af',
         hairline: '#eeeeee',
+        danger: '#d23b30',
+        'danger-soft': '#ffe9e5',
       },
       borderRadius: {
         md: '12px',

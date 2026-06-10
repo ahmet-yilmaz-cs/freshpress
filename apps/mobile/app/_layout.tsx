@@ -8,6 +8,7 @@ import {
   PlusJakartaSans_800ExtraBold,
   useFonts,
 } from '@expo-google-fonts/plus-jakarta-sans';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
@@ -15,7 +16,10 @@ import { View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { colors } from '@freshpress/design-system';
+
 import { AuthProvider, useAuth } from '../src/auth/AuthContext';
+import { PreferencesProvider } from '../src/lib/preferences';
 
 function RootNavigator() {
   const { status } = useAuth();
@@ -34,11 +38,16 @@ function RootNavigator() {
   }, [status, segments]);
 
   return (
-    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#f9f9f9' } }}>
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }}>
       <Stack.Screen name="(auth)" />
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="recipe/[id]" />
       <Stack.Screen name="pairing" />
+      <Stack.Screen name="device-info" />
+      <Stack.Screen name="account" />
+      <Stack.Screen name="help" />
+      <Stack.Screen name="history" />
+      <Stack.Screen name="calories" />
       <Stack.Screen name="settings" />
       <Stack.Screen name="recommendations" />
       <Stack.Screen name="stock" />
@@ -58,15 +67,19 @@ export default function RootLayout() {
     PlusJakartaSans_800ExtraBold,
   });
 
-  if (!fontsLoaded) return <View style={{ flex: 1, backgroundColor: '#f9f9f9' }} />;
+  if (!fontsLoaded) return <View style={{ flex: 1, backgroundColor: colors.bg }} />;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <AuthProvider>
-          <StatusBar style="dark" />
-          <RootNavigator />
-        </AuthProvider>
+        <BottomSheetModalProvider>
+          <PreferencesProvider>
+            <AuthProvider>
+              <StatusBar style="dark" />
+              <RootNavigator />
+            </AuthProvider>
+          </PreferencesProvider>
+        </BottomSheetModalProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

@@ -34,18 +34,46 @@ export interface Device {
 export type DeviceStatus = 'ready' | 'juicing' | 'paused' | 'cleaning' | 'offline';
 export type ExtractionSpeed = 'low' | 'medium' | 'high';
 
+export type VisualTone = 'orange' | 'amber' | 'green' | 'subtle';
+
+export interface DeviceDetails {
+  model: string;
+  serialNumber: string;
+  firmwareVersion: string;
+  bluetoothVersion: string;
+  totalRuntimeMin: number;
+  totalJuices: number;
+  filterUses: number;
+  filterLimit: number;
+  nextMaintenanceDays: number;
+  motorHealth: 'normal' | 'service-soon' | 'attention';
+  lastSyncAt: string;
+}
+
 export interface Recipe {
   id: string;
   title: string;
-  imageUrl: string;
+  description: string;
+  category: string;
+  tone: VisualTone;
   calories: number;
   durationSec: number;
   ingredients: string[];
+  steps: string[];
+  benefits: string[];
+  isCustom?: boolean;
+}
+
+export interface CreateRecipeInput {
+  title: string;
+  description: string;
+  ingredientIds: string[];
 }
 
 /** A logged juice the user has made. */
 export interface JuiceHistoryEntry {
   id: string;
+  recipeId?: string;
   title: string;
   volumeMl: number;
   calories: number;
@@ -75,7 +103,7 @@ export interface JuiceProgram {
   name: string;
   volumeMl: number;
   durationSec: number;
-  color: string; // hex accent
+  tone: VisualTone;
 }
 
 /** An in-app notification. */
@@ -92,9 +120,12 @@ export interface Notification {
 export interface StockItem {
   id: string;
   name: string;
+  category: 'fruit' | 'vegetable' | 'booster';
   level: number; // 0-100 remaining
   unit: string; // "g" | "ml" | "pcs"
   amount: number; // remaining amount in unit
+  caloriesPerUnit: number;
+  tone: VisualTone;
 }
 
 /** A curated recommendation card. */
@@ -102,8 +133,21 @@ export interface Recommendation {
   id: string;
   title: string;
   subtitle: string;
-  imageUrl: string;
   recipeId?: string;
+  tone: VisualTone;
+}
+
+export interface HelpTopic {
+  id: string;
+  title: string;
+  body: string;
+  category: 'device' | 'recipes' | 'account';
+}
+
+export interface AccountInsight {
+  label: string;
+  value: string;
+  tone: VisualTone;
 }
 
 /** Standard API error envelope returned by the Flask backend. */

@@ -1,12 +1,16 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Image, View } from 'react-native';
+import { View } from 'react-native';
+
+import { colors } from '@freshpress/design-system';
 
 import { useAuth } from '../../src/auth/AuthContext';
+import { JuiceVisual } from '../../src/components/FreshPressPrimitives';
+import { t } from '../../src/i18n/strings';
 import { AppleButton, Badge, Button, Screen, Text } from '../../src/components/ui';
+import { alpha } from '../../src/lib/visuals';
 
-/** Welcome / onboarding — Figma frame "Hoş Geldiniz" (39:410). */
 export default function Welcome() {
   const router = useRouter();
   const { appleSignIn } = useAuth();
@@ -24,30 +28,39 @@ export default function Welcome() {
   return (
     <Screen className="px-5">
       <LinearGradient
-        colors={['rgba(255,130,0,0.05)', '#f9f9f9']}
+        colors={[alpha(colors.orange, 0.08), colors.bg]}
         start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 0.7 }}
+        end={{ x: 0.5, y: 0.72 }}
         style={{ flex: 1, borderRadius: 12, paddingTop: 8 }}
       >
         <View className="flex-1 px-2">
-          <Image
-            source={{
-              uri: 'https://images.unsplash.com/photo-1622597467836-f3285f2131b8?w=900',
-            }}
-            className="w-full aspect-square rounded-[52px]"
-            resizeMode="cover"
-          />
+          <View className="flex-[1.2] items-center justify-end">
+            <View className="h-72 w-full items-center justify-center rounded-lg bg-card">
+              <JuiceVisual tone="orange" size="large" label="JuiceLab X1" />
+            </View>
+          </View>
 
-          <View className="flex-1 justify-center items-center gap-6 pt-8">
-            <Badge label="● SMART JUICING" tone="fresh" />
+          <View className="flex-1 items-center justify-center gap-6 pt-8">
+            <Badge label={t.welcome.badge} tone="fresh" />
             <Text variant="display" className="text-center px-4">
-              Freshness in{'\n'}every drop.
+              {t.welcome.title}
+            </Text>
+            <Text variant="body" className="text-center text-[14px] leading-[20px]">
+              {t.welcome.subtitle}
             </Text>
           </View>
 
-          <View className="gap-4 pb-2">
-            <Button title="Get Started" variant="primary" onPress={() => router.push('/(auth)/register')} />
-            <Button title="Log In" variant="secondary" onPress={() => router.push('/(auth)/login')} />
+          <View className="gap-3 pb-2">
+            <Button
+              title={t.welcome.getStarted}
+              variant="primary"
+              onPress={() => router.push('/(auth)/register')}
+            />
+            <Button
+              title={t.welcome.login}
+              variant="secondary"
+              onPress={() => router.push('/(auth)/login')}
+            />
             <AppleButton onPress={onApple} loading={appleLoading} />
           </View>
         </View>

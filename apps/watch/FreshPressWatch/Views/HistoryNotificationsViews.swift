@@ -14,37 +14,44 @@ struct HistoryView: View {
     }
 
     var body: some View {
-        Group {
+        WatchScreen(title: store.t("history")) {
             if store.history.isEmpty {
                 HistoryEmptyState()
             } else {
-                ScrollView {
-                    VStack(spacing: 6) {
-                        ForEach(groups, id: \.self) { group in
-                            SectionHeader(title: group)
-                            ForEach(store.history.filter { $0.group == group }) { entry in
-                                row(entry)
-                            }
+                VStack(spacing: 6) {
+                    ForEach(groups, id: \.self) { group in
+                        SectionHeader(title: store.historyGroupTitle(group))
+                        ForEach(store.history.filter { $0.group == group }) { entry in
+                            row(entry)
                         }
                     }
-                    .padding(.horizontal, 10)
                 }
             }
         }
-        .background(Theme.bg)
-        .navigationTitle("Geçmiş")
-        .navigationBarTitleDisplayMode(.inline)
     }
 
     private func row(_ entry: JuiceEntry) -> some View {
         Button { path.append(Route.detail(entry)) } label: {
             HStack(spacing: 8) {
+                Circle()
+                    .fill(entry.status.tint.color)
+                    .frame(width: 7, height: 7)
                 VStack(alignment: .leading, spacing: 1) {
-                    Text(entry.name).font(.fp(12, .semibold)).foregroundStyle(Theme.textPrimary)
-                    Text(entry.time).font(.fp(9)).foregroundStyle(Theme.textSecondary)
+                    Text(store.localizedMock(entry.name)).font(.fp(12, .semibold)).foregroundStyle(Theme.textPrimary)
+                    Text("\(entry.time) · \(store.historyStatus(entry.status))")
+                        .font(.fp(9))
+                        .foregroundStyle(Theme.textSecondary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
                 }
                 Spacer(minLength: 4)
-                VolumeBadge(volumeMl: entry.volumeMl)
+                VStack(alignment: .trailing, spacing: 1) {
+                    VolumeBadge(volumeMl: entry.volumeMl)
+                    Text(entry.durationLabel)
+                        .font(.fp(8))
+                        .foregroundStyle(Theme.textSecondary)
+                        .lineLimit(1)
+                }
             }
             .padding(.vertical, 8)
             .padding(.horizontal, 10)
@@ -57,11 +64,13 @@ struct HistoryView: View {
 }
 
 struct HistoryEmptyState: View {
+    @EnvironmentObject var store: JuicerStore
+
     var body: some View {
         VStack(spacing: 6) {
             Text("↺").font(.fp(32, .bold)).foregroundStyle(Theme.textTertiary)
-            Text("Henüz sıkım yok").font(.fp(14, .semibold)).foregroundStyle(Theme.textPrimary)
-            Text("İlk sıkımını başlat").font(.fp(9)).foregroundStyle(Theme.textSecondary)
+            Text(store.t("emptyHistoryTitle")).font(.fp(14, .semibold)).foregroundStyle(Theme.textPrimary)
+            Text(store.t("emptyHistorySubtitle")).font(.fp(9)).foregroundStyle(Theme.textSecondary)
         }
         .padding()
     }
@@ -78,34 +87,28 @@ struct NotificationsView: View {
     }
 
     var body: some View {
-        Group {
+        WatchScreen(title: store.t("notifications")) {
             if store.notices.isEmpty {
                 NotificationsEmptyState()
             } else {
-                ScrollView {
-                    VStack(spacing: 6) {
-                        ForEach(groups, id: \.self) { group in
-                            SectionHeader(title: group)
-                            ForEach(store.notices.filter { $0.group == group }) { n in
-                                row(n)
-                            }
+                VStack(spacing: 6) {
+                    ForEach(groups, id: \.self) { group in
+                        SectionHeader(title: store.historyGroupTitle(group))
+                        ForEach(store.notices.filter { $0.group == group }) { n in
+                            row(n)
                         }
                     }
-                    .padding(.horizontal, 10)
                 }
             }
         }
-        .background(Theme.bg)
-        .navigationTitle("Bildirimler")
-        .navigationBarTitleDisplayMode(.inline)
     }
 
     private func row(_ n: DeviceNotice) -> some View {
         HStack(spacing: 8) {
             Circle().fill(n.tint.color).frame(width: 8, height: 8)
             VStack(alignment: .leading, spacing: 1) {
-                Text(n.title).font(.fp(11, .semibold)).foregroundStyle(Theme.textPrimary)
-                Text(n.detail).font(.fp(9)).foregroundStyle(Theme.textSecondary)
+                Text(store.localizedMock(n.title)).font(.fp(11, .semibold)).foregroundStyle(Theme.textPrimary)
+                Text(store.localizedNoticeDetail(n.detail)).font(.fp(9)).foregroundStyle(Theme.textSecondary)
             }
             Spacer(minLength: 4)
             Text(n.time).font(.fp(9)).foregroundStyle(Theme.textSecondary)
@@ -119,12 +122,14 @@ struct NotificationsView: View {
 }
 
 struct NotificationsEmptyState: View {
+    @EnvironmentObject var store: JuicerStore
+
     var body: some View {
         VStack(spacing: 6) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.fp(32)).foregroundStyle(Theme.green)
-            Text("Bildirim yok").font(.fp(14, .semibold)).foregroundStyle(Theme.textPrimary)
-            Text("Her şey yolunda").font(.fp(9)).foregroundStyle(Theme.textSecondary)
+            Text(store.t("emptyNotificationsTitle")).font(.fp(14, .semibold)).foregroundStyle(Theme.textPrimary)
+            Text(store.t("emptyNotificationsSubtitle")).font(.fp(9)).foregroundStyle(Theme.textSecondary)
         }
         .padding()
     }

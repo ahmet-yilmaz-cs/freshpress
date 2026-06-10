@@ -1,14 +1,18 @@
 import type { Device } from '@freshpress/types';
 import { useRouter } from 'expo-router';
-import { Bluetooth, CheckCircle2, ChevronLeft, WifiOff } from 'lucide-react-native';
+import { Bluetooth, CheckCircle2, Info, RadioTower, WifiOff } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
+
+import { colors } from '@freshpress/design-system';
 
 import { api } from '../src/api/client';
 import { useAuth } from '../src/auth/AuthContext';
-import { Badge, Button, Card, Screen, Text } from '../src/components/ui';
+import { JuiceVisual, ListRow, SectionHeader } from '../src/components/FreshPressPrimitives';
+import { BackBar, Badge, Button, Card, Screen, Text } from '../src/components/ui';
+import { t } from '../src/i18n/strings';
+import { appRoute } from '../src/lib/route';
 
-/** Device Pairing — Figma frame 11:437. Functional connect/disconnect. */
 export default function Pairing() {
   const router = useRouter();
   const { user } = useAuth();
@@ -17,7 +21,10 @@ export default function Pairing() {
 
   useEffect(() => {
     if (!user) return;
-    api.device(user.id).then((r) => setDevice(r.device)).catch(() => setDevice(null));
+    api
+      .device(user.id)
+      .then((r) => setDevice(r.device))
+      .catch(() => setDevice(null));
   }, [user?.id]);
 
   const connected = device?.connected ?? false;
@@ -35,54 +42,89 @@ export default function Pairing() {
 
   return (
     <Screen edges={['top']} className="px-5">
-      <Pressable onPress={() => router.back()} className="flex-row items-center py-2 -ml-1">
-        <ChevronLeft size={24} color="#574235" />
-        <Text variant="body" className="text-muted">
-          Back
-        </Text>
-      </Pressable>
-
-      <Text variant="display" className="py-4">
-        Device{'\n'}Pairing
-      </Text>
-
-      <View className="flex-1 items-center justify-center gap-6">
-        <View
-          className={`h-40 w-40 items-center justify-center rounded-full ${
-            connected ? 'bg-green' : 'bg-track'
-          }`}
-        >
-          {busy ? (
-            <ActivityIndicator size="large" color="#954a00" />
-          ) : connected ? (
-            <CheckCircle2 size={72} color="#00721e" />
-          ) : (
-            <WifiOff size={72} color="#574235" />
-          )}
+      <BackBar onPress={() => router.back()} />
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ gap: 16, paddingBottom: 24 }}
+      >
+        <View className="gap-2 pt-2">
+          <Text variant="display" className="text-[34px] leading-[42px]">
+            {t.pairing.title}
+          </Text>
+          <Text variant="body" className="text-[14px] leading-[20px]">
+            {t.pairing.subtitle}
+          </Text>
         </View>
 
-        <Card className="w-full items-center gap-2">
-          <Bluetooth size={22} color="#954a00" />
-          <Text variant="h3">{device?.name ?? 'JuiceLab Pro X1'}</Text>
-          <Text variant="caption" className="tracking-normal">
-            {device?.series ?? 'PREMIUM SERIES'}
-          </Text>
-          <Badge
-            label={connected ? '● CONNECTED' : '● NOT CONNECTED'}
-            tone={connected ? 'fresh' : 'amber'}
-            className="mt-1"
+        <Card className="items-center gap-4">
+          <View
+            className={`h-36 w-36 items-center justify-center rounded-full ${connected ? 'bg-green' : 'bg-track'}`}
+          >
+            {busy ? (
+              <ActivityIndicator size="large" color={colors.amber} />
+            ) : connected ? (
+              <CheckCircle2 size={66} color={colors.greenInk} />
+            ) : (
+              <WifiOff size={66} color={colors.muted} />
+            )}
+          </View>
+          <View className="items-center gap-2">
+            <Text variant="h3">{device?.name ?? 'JuiceLab Pro X1'}</Text>
+            <Badge
+              label={connected ? t.pairing.connected : t.pairing.notConnected}
+              tone={connected ? 'fresh' : 'amber'}
+            />
+          </View>
+        </Card>
+
+        <SectionHeader title={t.pairing.nearby} />
+        <Card className="gap-0 p-0">
+          <ListRow
+            title="JuiceLab Pro X1"
+            subtitle={t.pairing.signal}
+            icon={<Bluetooth size={20} color={colors.amber} />}
+            right={
+              <Pressable
+                accessibilityRole="button"
+                onPress={toggle}
+                disabled={busy}
+                className="min-h-[36px] justify-center rounded-full bg-green px-4 active:opacity-70"
+              >
+                <Text variant="caption" className="text-green-ink tracking-normal">
+                  {connected ? t.pairing.paired : t.pairing.pair}
+                </Text>
+              </Pressable>
+            }
+          />
+          <ListRow
+            title={t.pairing.deviceDetails}
+            subtitle={t.pairing.deviceDetailsSub}
+            icon={<Info size={20} color={colors.amber} />}
+            onPress={() => router.push(appRoute('/device-info'))}
+            last
           />
         </Card>
-      </View>
 
-      <View className="pb-6">
+        <Card className="flex-row items-center gap-3 bg-subtle border-border-warm/40">
+          <JuiceVisual tone="green" size="small" />
+          <View className="min-w-0 flex-1">
+            <Text variant="body" className="text-ink">
+              {t.pairing.tip}
+            </Text>
+            <Text variant="caption" className="tracking-normal">
+              {t.pairing.tipBody}
+            </Text>
+          </View>
+          <RadioTower size={20} color={colors.muted} />
+        </Card>
+
         <Button
-          title={connected ? 'Disconnect' : 'Pair Device'}
+          title={connected ? t.pairing.disconnect : t.pairing.pairDevice}
           variant={connected ? 'secondary' : 'primary'}
           loading={busy}
           onPress={toggle}
         />
-      </View>
+      </ScrollView>
     </Screen>
   );
 }
