@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { Bell, Database, Globe, Moon, ShieldCheck } from 'lucide-react-native';
+import { Bell, CircleHelp, Database, Globe, Moon, ShieldCheck } from 'lucide-react-native';
 import type { ReactNode } from 'react';
 import { ScrollView, Switch, View } from 'react-native';
 
@@ -7,6 +7,7 @@ import { colors } from '@freshpress/design-system';
 
 import { BackBar, Button, Card, Screen, Text } from '../src/components/ui';
 import { ListRow, SectionHeader } from '../src/components/FreshPressPrimitives';
+import { Reveal } from '../src/components/Reveal';
 import { useAuth } from '../src/auth/AuthContext';
 import { t } from '../src/i18n/strings';
 import { usePreferences, type Preferences } from '../src/lib/preferences';
@@ -49,12 +50,13 @@ export default function Settings() {
   return (
     <Screen edges={['top']} className="px-5">
       <BackBar onPress={() => router.back()} />
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ gap: 16, paddingBottom: 24 }}
-      >
+      <Reveal style={{ flex: 1 }}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ gap: 16, paddingBottom: 24 }}
+        >
         <View className="gap-2 pt-2">
-          <Text variant="display" className="text-[34px] leading-[42px]">
+          <Text variant="display" className="text-[28px] leading-[34px]">
             {t.settings.title}
           </Text>
           <Text variant="body" className="text-[14px] leading-[20px]">
@@ -73,7 +75,7 @@ export default function Settings() {
           <ListRow
             title={t.settings.help}
             subtitle={t.settings.helpSub}
-            icon={<Bell size={20} color={colors.amber} />}
+            icon={<CircleHelp size={20} color={colors.amber} />}
             onPress={() => router.push(appRoute('/help'))}
             last
           />
@@ -110,7 +112,8 @@ export default function Settings() {
         </Card>
 
         <Button title={t.settings.logout} variant="secondary" onPress={logout} className="mt-2" />
-      </ScrollView>
+        </ScrollView>
+      </Reveal>
     </Screen>
   );
 }

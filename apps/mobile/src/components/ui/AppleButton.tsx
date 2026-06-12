@@ -24,7 +24,7 @@ export function AppleButton({
       disabled={loading}
       onPress={onPress}
       className={cn(
-        'h-[60px] flex-row items-center justify-center gap-2.5 rounded-full bg-black px-6 active:opacity-90',
+        'h-[54px] flex-row items-center justify-center gap-2.5 rounded-full bg-black px-6 active:opacity-90',
         loading && 'opacity-60',
         className,
       )}

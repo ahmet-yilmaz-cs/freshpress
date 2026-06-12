@@ -26,6 +26,7 @@ export {
   addCustomRecipe,
   getStock,
   helpTopics,
+  juicingSession,
   programs,
   recipes,
   recommendations,

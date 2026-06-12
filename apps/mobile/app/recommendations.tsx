@@ -29,7 +29,7 @@ export default function Recommendations() {
         contentContainerStyle={{ gap: 16, paddingBottom: 24 }}
       >
         <View className="gap-2 pt-2">
-          <Text variant="display" className="text-[34px] leading-[42px]">
+          <Text variant="display" className="text-[28px] leading-[34px]">
             {t.recommendations.title}
           </Text>
           <Text variant="body" className="text-[14px] leading-[20px]">

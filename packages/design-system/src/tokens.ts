@@ -4,29 +4,30 @@
  */
 
 export const colors = {
-  // Brand
-  orange: '#ff8200', // primary brand / active states
-  amber: '#954a00', // deep brand — primary CTA, headings accent
-  amberPressed: '#5f2c00',
-  amberInk: '#5f2d01',
+  // Brand — warm + vibrant cold-press palette (lively orange + fresh green)
+  orange: '#ec6f15', // vivid warm orange / active states
+  yellow: '#f3b733', // bright honey-gold yield-fill midpoint
+  amber: '#b1521c', // rich sienna — primary CTA, headings accent
+  amberPressed: '#642c0e',
+  amberInk: '#642c0e',
 
-  // Fresh accent (juice green)
-  green: '#91f68d', // primary action surface (START JUICING)
-  greenSoft: '#94f990', // badge background
-  greenInk: '#00721e', // text on green
-  greenDeep: '#005313',
+  // Fresh accent (vibrant leaf green)
+  green: '#9ed95f', // primary action surface (START JUICING)
+  greenSoft: '#bdec8a', // badge background
+  greenInk: '#2c6a13', // leaf-green text on green
+  greenDeep: '#1f4f0d',
 
-  // Neutrals
-  ink: '#1a1c1c', // headings / primary text
-  muted: '#574235', // body / secondary (warm gray-brown)
-  bg: '#f9f9f9', // app background
-  card: '#ffffff', // card surface
-  subtle: '#f3f3f4', // inset surface
-  track: '#e2e2e2', // slider track / avatar bg
-  border: '#eeeeee', // hairline border
-  borderWarm: '#dec1af', // warm border
-  danger: '#d23b30',
-  dangerSoft: '#ffe9e5',
+  // Neutrals — cream paper + warm charcoal
+  ink: '#231e1a', // headings / primary text (warm charcoal)
+  muted: '#5c4636', // body / secondary (warm gray-brown)
+  bg: '#f5efe4', // app background (cream)
+  card: '#fffdf8', // card surface (warm white)
+  subtle: '#efe7d9', // inset surface
+  track: '#e7dccc', // slider track / avatar bg
+  border: '#ebe2d4', // hairline border
+  borderWarm: '#d9bda6', // warm border
+  danger: '#c0452e',
+  dangerSoft: '#f6e0d4',
 
   white: '#ffffff',
   black: '#000000',

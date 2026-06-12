@@ -15,6 +15,7 @@ import { colors } from '@freshpress/design-system';
 import { useAuth } from '../../src/auth/AuthContext';
 import { AppHeader } from '../../src/components/AppHeader';
 import { ListRow, MetricCard, SectionHeader } from '../../src/components/FreshPressPrimitives';
+import { Reveal } from '../../src/components/Reveal';
 import { Button, Card, Screen, Text } from '../../src/components/ui';
 import { t } from '../../src/i18n/strings';
 import { appRoute } from '../../src/lib/route';
@@ -27,10 +28,11 @@ export default function Profile() {
     <Screen edges={['top']}>
       <AppHeader title={t.profile.title} subtitle={t.profile.subtitle} compact />
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24, gap: 16 }}
-      >
+      <Reveal style={{ flex: 1 }}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24, gap: 16 }}
+        >
         <Card className="flex-row items-center gap-4">
           <View className="h-16 w-16 items-center justify-center rounded-full border border-border-warm bg-track">
             <Text variant="h2" className="text-amber">
@@ -104,7 +106,8 @@ export default function Profile() {
             {t.profile.footer}
           </Text>
         </View>
-      </ScrollView>
+        </ScrollView>
+      </Reveal>
     </Screen>
   );
 }

@@ -1,27 +1,37 @@
 import type { Recipe, Recommendation, StockItem } from '@freshpress/types';
 import { formatDuration } from '@freshpress/utils';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { Check, Plus, Search, Sparkles } from 'lucide-react-native';
+import { Check, HeartPulse, Plus, Search, ShieldCheck, Sun, Zap } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
-import { Pressable, ScrollView, TextInput, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 
 import { colors } from '@freshpress/design-system';
 
 import { api } from '../../src/api/client';
 import { AppHeader } from '../../src/components/AppHeader';
 import { BottomSheet } from '../../src/components/BottomSheet';
-import { JuiceVisual, SectionHeader } from '../../src/components/FreshPressPrimitives';
+import { FoodImage } from '../../src/components/FoodImage';
+import { SectionHeader } from '../../src/components/FreshPressPrimitives';
+import { Reveal } from '../../src/components/Reveal';
 import { Button, Card, Input, Screen, Text } from '../../src/components/ui';
 import { labels, t } from '../../src/i18n/strings';
 import { cn } from '../../src/lib/cn';
-import { toneFor } from '../../src/lib/visuals';
+import { ingredientImage, recipeImage } from '../../src/lib/foodImages';
+import { images } from '../../src/lib/images';
+import { alpha, toneFor } from '../../src/lib/visuals';
 
-const CATEGORIES = [
-  t.explore.categories.energy,
-  t.explore.categories.immunity,
-  t.explore.categories.glow,
-  t.explore.categories.recovery,
-];
+/**
+ * Each Quick Category gets a distinct icon + token-based tint, mirroring the
+ * prototype's category chips (every category had its own glyph and colour).
+ * Colours stay on design tokens — no hardcoded hex in the screen.
+ */
+const CATEGORY_META = [
+  { label: t.explore.categories.energy, Icon: Zap, color: colors.orange, bg: 'bg-orange/10' },
+  { label: t.explore.categories.immunity, Icon: ShieldCheck, color: colors.greenInk, bg: 'bg-green/30' },
+  { label: t.explore.categories.glow, Icon: Sun, color: colors.amber, bg: 'bg-yellow/25' },
+  { label: t.explore.categories.recovery, Icon: HeartPulse, color: colors.greenDeep, bg: 'bg-green/20' },
+] as const;
 
 export default function Explore() {
   const router = useRouter();
@@ -90,11 +100,33 @@ export default function Explore() {
     <Screen edges={['top']}>
       <AppHeader title={t.explore.title} subtitle={t.explore.subtitle} compact />
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24, gap: 16 }}
-      >
-        <View className="min-h-[52px] flex-row items-center gap-3 rounded-md border border-hairline bg-card px-4">
+      <Reveal style={{ flex: 1 }}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24, gap: 16 }}
+        >
+          {/* Appetising fresh-produce hero — real photography sets the tone for discovery. */}
+          <View className="overflow-hidden rounded-2xl" style={{ height: 150, position: 'relative' }}>
+            <Image
+              source={images.heroFruits}
+              resizeMode="cover"
+              style={{ width: '100%', height: '100%' }}
+            />
+            <LinearGradient
+              colors={['transparent', alpha(colors.ink, 0.6)]}
+              style={StyleSheet.absoluteFill}
+            />
+            <View className="absolute inset-x-0 bottom-0 gap-1 p-4">
+              <Text variant="eyebrow" className="text-white">
+                {t.explore.heroEyebrow}
+              </Text>
+              <Text variant="h3" className="text-[20px] leading-[26px] text-white">
+                {t.explore.heroTitle}
+              </Text>
+            </View>
+          </View>
+
+          <View className="min-h-[52px] flex-row items-center gap-3 rounded-md border border-hairline bg-card px-4">
           <Search size={20} color={colors.muted} />
           <TextInput
             value={query}
@@ -108,31 +140,31 @@ export default function Explore() {
         </View>
 
         <View className="flex-row justify-between">
-          {CATEGORIES.map((category, index) => {
-            const active = activeCategory === category;
+          {CATEGORY_META.map(({ label, Icon, color, bg }) => {
+            const active = activeCategory === label;
             return (
               <Pressable
-                key={category}
+                key={label}
                 accessibilityRole="button"
                 accessibilityState={{ selected: active }}
-                onPress={() => setActiveCategory((cur) => (cur === category ? null : category))}
+                onPress={() => setActiveCategory((cur) => (cur === label ? null : label))}
                 className="w-[22%] items-center gap-2 active:opacity-70"
               >
                 <View
                   className={cn(
                     'h-12 w-12 items-center justify-center rounded-full',
-                    index % 2 ? 'bg-green/30' : 'bg-orange/10',
+                    bg,
                     active && 'border-2 border-amber',
                   )}
                 >
-                  <Sparkles size={18} color={index % 2 ? colors.greenInk : colors.orange} />
+                  <Icon size={18} color={color} />
                 </View>
                 <Text
                   variant="caption"
                   className={cn('text-center tracking-normal', active && 'text-amber')}
                   numberOfLines={1}
                 >
-                  {category}
+                  {label}
                 </Text>
               </Pressable>
             );
@@ -196,7 +228,8 @@ export default function Explore() {
             <Button title={t.explore.addRecipe} onPress={() => setSheetOpen(true)} className="w-full" />
           </Card>
         )}
-      </ScrollView>
+        </ScrollView>
+      </Reveal>
 
       <BottomSheet
         visible={sheetOpen}
@@ -240,7 +273,7 @@ export default function Explore() {
                 active ? 'border-green bg-green/20' : 'border-hairline',
               )}
             >
-              <JuiceVisual tone={item.tone} size="small" />
+              <FoodImage source={ingredientImage(item.id, item.name, item.tone)} radius={12} style={{ width: 56, height: 56 }} />
               <View className="min-w-0 flex-1">
                 <Text variant="body" className="text-ink" numberOfLines={1}>
                   {item.name}
@@ -274,7 +307,7 @@ function RecipeCard({ recipe, onPress }: { recipe: Recipe; onPress: () => void }
   return (
     <Pressable onPress={onPress} className="active:opacity-80">
       <Card className="flex-row items-center gap-4 p-3">
-        <JuiceVisual tone={recipe.tone} label={recipe.category} size="medium" />
+        <FoodImage source={recipeImage(recipe.id, recipe.tone)} radius={14} style={{ width: 84, height: 84 }} />
         <View className="min-w-0 flex-1 gap-1">
           <Text variant="h3" className="text-[18px] leading-[24px]" numberOfLines={1}>
             {recipe.title}
@@ -300,12 +333,16 @@ function RecommendationCard({
   recommendation: Recommendation;
   onPress: () => void;
 }) {
-  const tn = toneFor(recommendation.tone);
   return (
     <Pressable onPress={onPress} className="active:opacity-80">
-      <Card style={{ width: 252, height: 240 }} className={cn('gap-3', tn.bg, tn.border)}>
-        <JuiceVisual tone={recommendation.tone} size="medium" />
-        <View className="flex-1 gap-1">
+      {/* Image-led card: a full-width photo banner over the copy reads as editorial, not template. */}
+      <Card style={{ width: 252, height: 250 }} className="overflow-hidden p-0">
+        <FoodImage
+          source={recipeImage(recommendation.recipeId, recommendation.tone)}
+          radius={0}
+          style={{ height: 134 }}
+        />
+        <View className="flex-1 gap-1 p-4">
           {/* Reserve two lines for the title so subtitles always start at the same baseline. */}
           <View style={{ height: 48 }}>
             <Text variant="h3" className="text-[18px] leading-[24px]" numberOfLines={2}>

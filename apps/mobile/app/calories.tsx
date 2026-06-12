@@ -9,8 +9,13 @@ import { colors } from '@freshpress/design-system';
 import { api } from '../src/api/client';
 import { useAuth } from '../src/auth/AuthContext';
 import { JuiceVisual, MetricCard, SectionHeader } from '../src/components/FreshPressPrimitives';
+import { Reveal } from '../src/components/Reveal';
 import { BackBar, Card, Screen, Text } from '../src/components/ui';
 import { t } from '../src/i18n/strings';
+
+/** Fixed pixel height of the week-trend bar track (percentage heights inside a flex
+ *  parent don't resolve on react-native-web, leaving the chart blank). */
+const CHART_TRACK_H = 104;
 
 export default function Calories() {
   const router = useRouter();
@@ -39,12 +44,13 @@ export default function Calories() {
   return (
     <Screen edges={['top']} className="px-5">
       <BackBar onPress={() => router.back()} />
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ gap: 16, paddingBottom: 24 }}
-      >
+      <Reveal style={{ flex: 1 }}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ gap: 16, paddingBottom: 24 }}
+        >
         <View className="gap-2 pt-2">
-          <Text variant="display" className="text-[34px] leading-[42px]">
+          <Text variant="display" className="text-[28px] leading-[34px]">
             {t.calories.title}
           </Text>
           <Text variant="body" className="text-[14px] leading-[20px]">
@@ -81,13 +87,13 @@ export default function Calories() {
 
         <Card className="gap-3">
           <SectionHeader title={t.calories.weekTrend} />
-          <View className="h-32 flex-row items-end justify-between gap-2">
+          <View className="flex-row items-end justify-between gap-2">
             {calories.days.map((day) => (
               <View key={day.label} className="flex-1 items-center gap-1">
-                <View className="w-full flex-1 justify-end">
+                <View style={{ height: CHART_TRACK_H, width: '100%', justifyContent: 'flex-end' }}>
                   <View
                     className="w-full rounded-t-md bg-orange"
-                    style={{ height: `${Math.max(8, Math.round((day.calories / maxCal) * 100))}%` }}
+                    style={{ height: Math.max(6, Math.round((day.calories / maxCal) * CHART_TRACK_H)) }}
                   />
                 </View>
                 <Text variant="caption" className="tracking-normal">
@@ -122,7 +128,8 @@ export default function Calories() {
             </Card>
           </Pressable>
         ))}
-      </ScrollView>
+        </ScrollView>
+      </Reveal>
     </Screen>
   );
 }
