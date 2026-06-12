@@ -8,8 +8,11 @@ import { colors } from '@freshpress/design-system';
 
 import { AppHeader } from '../../src/components/AppHeader';
 import { BottomSheet } from '../../src/components/BottomSheet';
-import { JuiceVisual, SectionHeader } from '../../src/components/FreshPressPrimitives';
+import { FoodImage } from '../../src/components/FoodImage';
+import { SectionHeader } from '../../src/components/FreshPressPrimitives';
+import { Reveal } from '../../src/components/Reveal';
 import { api } from '../../src/api/client';
+import { ingredientImage } from '../../src/lib/foodImages';
 import { Button, Card, Screen, Text } from '../../src/components/ui';
 import { labels, t } from '../../src/i18n/strings';
 
@@ -78,10 +81,11 @@ export default function Stock() {
     <Screen edges={['top']}>
       <AppHeader title={t.stock.title} subtitle={t.stock.subtitle} compact />
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24, gap: 16 }}
-      >
+      <Reveal style={{ flex: 1 }}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24, gap: 16 }}
+        >
         <Card className="gap-4 bg-subtle border-border-warm/40">
           <View className="flex-row items-center gap-4">
             <View className="h-12 w-12 items-center justify-center rounded-md bg-card">
@@ -123,7 +127,8 @@ export default function Stock() {
             </View>
           ) : null,
         )}
-      </ScrollView>
+        </ScrollView>
+      </Reveal>
 
       <BottomSheet
         visible={sheetOpen}
@@ -136,7 +141,7 @@ export default function Stock() {
             key={item.id}
             className="flex-row items-center gap-3 rounded-md border border-hairline bg-card p-3"
           >
-            <JuiceVisual tone={item.tone} size="small" />
+            <FoodImage source={ingredientImage(item.id, item.name, item.tone)} radius={12} style={{ width: 56, height: 56 }} />
             <View className="min-w-0 flex-1">
               <Text variant="body" className="text-ink" numberOfLines={1}>
                 {item.name}
@@ -176,7 +181,7 @@ function StockCard({ item }: { item: StockItem }) {
   return (
     <Card className="gap-3">
       <View className="flex-row items-center gap-3">
-        <JuiceVisual tone={item.tone} size="small" />
+        <FoodImage source={ingredientImage(item.id, item.name, item.tone)} radius={12} style={{ width: 56, height: 56 }} />
         <View className="min-w-0 flex-1">
           <Text variant="h3" className="text-[17px] leading-[23px]" numberOfLines={1}>
             {item.name}

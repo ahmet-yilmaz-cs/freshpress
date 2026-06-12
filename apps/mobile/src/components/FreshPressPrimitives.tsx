@@ -6,6 +6,7 @@ import { StyleSheet, Pressable, View } from 'react-native';
 import { colors } from '@freshpress/design-system';
 import type { VisualTone } from '@freshpress/types';
 
+import { upperTr } from '../i18n/strings';
 import { cn } from '../lib/cn';
 import { toneFor } from '../lib/visuals';
 import { Card, Text } from './ui';
@@ -47,12 +48,12 @@ export function SectionHeader({
   return (
     <View className="flex-row items-center justify-between pt-2">
       <Text variant="eyebrow" className="text-ink">
-        {title.toUpperCase()}
+        {upperTr(title)}
       </Text>
       {action && onAction ? (
         <Pressable onPress={onAction} className="active:opacity-70">
           <Text variant="eyebrow" className="text-amber">
-            {action.toUpperCase()}
+            {upperTr(action)}
           </Text>
         </Pressable>
       ) : null}
@@ -155,7 +156,7 @@ export function JuiceVisual({
           numberOfLines={1}
           style={{ textShadowColor: 'rgba(0,0,0,0.18)', textShadowRadius: 3 }}
         >
-          {label.toUpperCase()}
+          {upperTr(label)}
         </Text>
       ) : null}
     </View>

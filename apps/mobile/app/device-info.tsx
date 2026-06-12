@@ -9,7 +9,9 @@ import { colors } from '@freshpress/design-system';
 
 import { api } from '../src/api/client';
 import { useAuth } from '../src/auth/AuthContext';
-import { JuiceVisual, MetricCard, SectionHeader } from '../src/components/FreshPressPrimitives';
+import { DeviceImage } from '../src/components/DeviceImage';
+import { MetricCard, SectionHeader } from '../src/components/FreshPressPrimitives';
+import { Reveal } from '../src/components/Reveal';
 import { BackBar, Badge, Card, Screen, Text } from '../src/components/ui';
 import { t } from '../src/i18n/strings';
 
@@ -42,12 +44,13 @@ export default function DeviceInfo() {
   return (
     <Screen edges={['top']} className="px-5">
       <BackBar onPress={() => router.back()} />
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ gap: 16, paddingBottom: 24 }}
-      >
+      <Reveal style={{ flex: 1 }}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ gap: 16, paddingBottom: 24 }}
+        >
         <View className="gap-2 pt-2">
-          <Text variant="display" className="text-[34px] leading-[42px]">
+          <Text variant="display" className="text-[28px] leading-[34px]">
             {t.deviceInfo.title}
           </Text>
           <Text variant="body" className="text-[14px] leading-[20px]">
@@ -56,12 +59,12 @@ export default function DeviceInfo() {
         </View>
 
         <Card className="flex-row gap-4">
-          <JuiceVisual tone={device?.connected ? 'orange' : 'subtle'} />
+          <DeviceImage size={116} dimmed={!device?.connected} />
           <View className="min-w-0 flex-1 justify-center gap-2">
             <Text variant="eyebrow" className="text-amber">
               {device?.series ?? t.home.premiumSeries}
             </Text>
-            <Text variant="h3" className="text-[24px] leading-[30px]">
+            <Text variant="h3" className="text-[20px] leading-[26px]">
               {device?.name ?? 'JuiceLab Pro X1'}
             </Text>
             <Badge
@@ -133,7 +136,8 @@ export default function DeviceInfo() {
             last
           />
         </Card>
-      </ScrollView>
+        </ScrollView>
+      </Reveal>
     </Screen>
   );
 }

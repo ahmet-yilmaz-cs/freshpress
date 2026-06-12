@@ -5,5 +5,6 @@ export { Badge } from './Badge';
 export { Input } from './Input';
 export { Screen } from './Screen';
 export { BackBar } from './BackBar';
+export { ProgressRing } from './ProgressRing';
 export { AppleButton } from './AppleButton';
 export { AppleLogo } from './AppleLogo';

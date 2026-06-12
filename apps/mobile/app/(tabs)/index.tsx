@@ -1,10 +1,11 @@
 import type { Device, ExtractionSpeed, JuiceProgram } from '@freshpress/types';
 import { formatDuration, formatMl } from '@freshpress/utils';
 import { useRouter } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 import {
   BatteryMedium,
   CircleCheck,
-  Gauge,
+  Droplet,
   Info,
   Power,
   SlidersHorizontal,
@@ -18,12 +19,18 @@ import { api } from '../../src/api/client';
 import { useAuth } from '../../src/auth/AuthContext';
 import { AppHeader } from '../../src/components/AppHeader';
 import { BottomSheet } from '../../src/components/BottomSheet';
-import { JuiceVisual, MetricCard, SectionHeader } from '../../src/components/FreshPressPrimitives';
+import { DeviceImage } from '../../src/components/DeviceImage';
+import { FoodImage } from '../../src/components/FoodImage';
+import { MetricCard, SectionHeader } from '../../src/components/FreshPressPrimitives';
+import { Reveal } from '../../src/components/Reveal';
 import { Badge, Card, Screen, Text } from '../../src/components/ui';
 import { labels, statusLabel, t } from '../../src/i18n/strings';
-import { cn } from '../../src/lib/cn';
+import { programImage } from '../../src/lib/foodImages';
 import { appRoute } from '../../src/lib/route';
-import { toneFor } from '../../src/lib/visuals';
+import { alpha } from '../../src/lib/visuals';
+
+/** Knob position (% of track) per speed step — mirrors the prototype slider. */
+const SPEED_POSITION = { low: 12, medium: 50, high: 88 } as const;
 
 export default function DeviceControl() {
   const { user } = useAuth();
@@ -75,27 +82,35 @@ export default function DeviceControl() {
     <Screen edges={['top']}>
       <AppHeader title={t.home.title} subtitle={t.home.subtitle} unread={unread} />
 
-      <ScrollView
-        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24, gap: 16 }}
-        showsVerticalScrollIndicator={false}
-      >
+      <Reveal style={{ flex: 1 }} duration={520}>
+        <ScrollView
+          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24, gap: 16 }}
+          showsVerticalScrollIndicator={false}
+        >
         <Card className="gap-4">
           <View className="flex-row gap-4">
-            <JuiceVisual
-              tone={connected ? 'orange' : 'subtle'}
-              label={connected ? 'online' : 'eşle'}
-            />
+            <DeviceImage size={120} label={connected ? 'ONLINE' : 'EŞLE'} dimmed={!connected} />
             <View className="min-w-0 flex-1 justify-center gap-2">
               <Text variant="eyebrow" className="text-amber">
                 {device?.series ?? t.home.premiumSeries}
               </Text>
-              <Text variant="h3" className="text-[24px] leading-[30px]">
+              <Text variant="h3" className="text-[20px] leading-[26px]">
                 {device?.name ?? 'JuiceLab Pro X1'}
               </Text>
-              <Badge
-                label={connected ? statusLabel(deviceStatus).toUpperCase() : t.home.notConnected}
-                tone={connected ? 'fresh' : 'amber'}
-              />
+              {/* When connected, the live status is already shown in the "Durum" metric
+                  card below, so we surface the device tagline here (mirrors the prototype's
+                  connect card). When offline, we keep the "BAĞLI DEĞİL" badge as a warning. */}
+              {connected ? (
+                <Text
+                  variant="body"
+                  className="text-[13px] leading-[18px] text-muted"
+                  numberOfLines={2}
+                >
+                  {t.home.tagline}
+                </Text>
+              ) : (
+                <Badge label={t.home.notConnected} tone="amber" />
+              )}
             </View>
           </View>
           <Pressable
@@ -132,11 +147,11 @@ export default function DeviceControl() {
         <Pressable
           accessibilityRole="button"
           onPress={() => start()}
-          className="h-20 items-center justify-center rounded-full bg-green active:opacity-90"
+          className="h-14 items-center justify-center rounded-full bg-green active:opacity-90"
         >
           <View className="flex-row items-center gap-2">
-            <Power size={22} color={colors.greenInk} />
-            <Text className="font-bold text-[22px] text-green-ink">
+            <Power size={20} color={colors.greenInk} />
+            <Text className="font-bold text-[17px] text-green-ink">
               {connected ? t.home.startJuicing : t.home.pairDevice}
             </Text>
           </View>
@@ -158,33 +173,70 @@ export default function DeviceControl() {
         </ScrollView>
 
         <Card className="overflow-hidden p-0">
-          <View className="items-center gap-1 px-5 pb-5 pt-6">
-            <Gauge size={28} color={colors.ink} />
-            <Text variant="h3">{t.home.yieldVolume}</Text>
-            <View className="flex-row items-end">
-              <Text variant="display">{selectedYield}</Text>
-              <Text variant="h3" className="mb-2 ml-1 text-muted">
-                {t.common.ml}
-              </Text>
-            </View>
-            <Badge label={`%${capacityPct} ${t.home.capacity}`} tone="dark" />
+          <View className="items-center gap-1 px-5 pb-2 pt-5">
+            <Droplet size={22} color={colors.orange} fill={alpha(colors.orange, 0.2)} />
+            <Text variant="body" className="text-[13px] text-muted">
+              {t.home.yieldVolume}
+            </Text>
           </View>
-          <View className="h-20 justify-end bg-orange/10">
-            <View
-              className="rounded-t-lg bg-orange/60"
-              style={{ height: `${Math.max(12, capacityPct)}%` }}
+          <View className="justify-end" style={{ height: 124 }}>
+            <LinearGradient
+              colors={[alpha(colors.yellow, 0), colors.yellow, colors.orange]}
+              locations={[0, 0.55, 1]}
+              style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
             />
+            <View className="items-center pb-3">
+              <View className="flex-row items-end">
+                <Text
+                  variant="display"
+                  className="text-[36px] leading-[42px] text-white"
+                  style={{ textShadowColor: 'rgba(90,40,0,0.3)', textShadowRadius: 4 }}
+                >
+                  {selectedYield}
+                </Text>
+                <Text
+                  variant="h3"
+                  className="mb-0.5 ml-1 text-[16px] text-white"
+                  style={{ textShadowColor: 'rgba(90,40,0,0.3)', textShadowRadius: 4 }}
+                >
+                  {t.common.ml}
+                </Text>
+              </View>
+            </View>
+            <View className="absolute bottom-3 right-3">
+              <Badge label={`%${capacityPct} ${t.home.capacity}`} tone="dark" />
+            </View>
           </View>
         </Card>
 
-        <Card className="gap-3 bg-subtle border-border-warm/40">
-          <View className="flex-row items-center gap-2">
-            <SlidersHorizontal size={18} color={colors.amber} />
-            <Text variant="h3" className="text-[17px] leading-[24px]">
-              {t.home.extractionSpeed}
+        <Card className="gap-3">
+          <View className="flex-row items-center justify-between">
+            <View className="flex-row items-center gap-2">
+              <SlidersHorizontal size={18} color={colors.amber} />
+              <Text variant="h3" className="text-[17px] leading-[24px]">
+                {t.home.extractionSpeed}
+              </Text>
+            </View>
+            <Text variant="eyebrow" className="text-orange">
+              {labels.speed[speed]}
             </Text>
           </View>
-          <View className="flex-row gap-2">
+          <View className="justify-center" style={{ height: 24 }}>
+            <View className="h-1.5 w-full rounded-full bg-track" />
+            <View
+              className="absolute h-5 w-5 rounded-full bg-orange"
+              style={{
+                left: `${SPEED_POSITION[speed]}%`,
+                marginLeft: -10,
+                shadowColor: colors.black,
+                shadowOpacity: 0.25,
+                shadowRadius: 3,
+                shadowOffset: { width: 0, height: 1 },
+                elevation: 3,
+              }}
+            />
+          </View>
+          <View className="flex-row justify-between">
             {(['low', 'medium', 'high'] as const).map((option) => {
               const active = option === speed;
               return (
@@ -193,15 +245,9 @@ export default function DeviceControl() {
                   accessibilityRole="button"
                   accessibilityState={{ selected: active }}
                   onPress={() => selectSpeed(option)}
-                  className={cn(
-                    'min-h-[44px] flex-1 items-center justify-center rounded-full px-3 active:opacity-80',
-                    active ? 'bg-amber' : 'bg-card',
-                  )}
+                  className="min-h-[36px] justify-center px-1 active:opacity-70"
                 >
-                  <Text
-                    variant="eyebrow"
-                    className={cn('text-center', active ? 'text-white' : 'text-muted')}
-                  >
+                  <Text variant="eyebrow" className={active ? 'text-orange' : 'text-muted'}>
                     {labels.speed[option]}
                   </Text>
                 </Pressable>
@@ -209,7 +255,8 @@ export default function DeviceControl() {
             })}
           </View>
         </Card>
-      </ScrollView>
+        </ScrollView>
+      </Reveal>
 
       <BottomSheet
         visible={programSheet}
@@ -227,7 +274,7 @@ export default function DeviceControl() {
             className="active:opacity-80"
           >
             <Card className="flex-row items-center gap-3 p-3">
-              <JuiceVisual tone={program.tone} size="small" />
+              <FoodImage source={programImage(program.id, program.tone)} radius={12} style={{ width: 52, height: 52 }} />
               <View className="min-w-0 flex-1">
                 <Text variant="body" className="text-ink">
                   {program.name}
@@ -249,19 +296,22 @@ export default function DeviceControl() {
 
 /** Fixed-size card so every quick-program tile is identical regardless of name length. */
 function ProgramCard({ program, onPress }: { program: JuiceProgram; onPress: () => void }) {
-  const tn = toneFor(program.tone);
   return (
     <Pressable onPress={onPress} className="active:opacity-80">
-      <Card
-        style={{ width: 168, height: 176 }}
-        className={cn('justify-between', tn.bg, tn.border)}
-      >
-        <JuiceVisual tone={program.tone} size="small" />
-        <View className="gap-1">
-          <Text variant="h3" className="text-[16px] leading-[20px]" numberOfLines={2}>
+      {/* Photo on top, label below — clean separation, no text over the image. */}
+      <Card className="overflow-hidden p-0" style={{ width: 164 }}>
+        <FoodImage source={programImage(program.id, program.tone)} radius={0} style={{ height: 96 }} />
+        <View className="gap-1 px-3 py-3">
+          {/* Reserve two lines so short and long names keep the same card height. */}
+          <Text
+            variant="h3"
+            className="text-[14px] leading-[18px]"
+            numberOfLines={2}
+            style={{ minHeight: 36 }}
+          >
             {program.name}
           </Text>
-          <Text variant="eyebrow" className={tn.text}>
+          <Text variant="eyebrow" className="text-amber">
             {formatMl(program.volumeMl)}
           </Text>
         </View>

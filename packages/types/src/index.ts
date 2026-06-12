@@ -106,6 +106,20 @@ export interface JuiceProgram {
   tone: VisualTone;
 }
 
+/** An ingredient processed during a live juicing run (Preparing screen). */
+export interface JuicingIngredient {
+  id: string;
+  name: string;
+  tone: VisualTone;
+}
+
+/** Mock state backing the live juicing (Preparing) screen. */
+export interface JuicingSession {
+  ingredients: JuicingIngredient[];
+  benefits: string[];
+  rpmBySpeed: Record<ExtractionSpeed, number>;
+}
+
 /** An in-app notification. */
 export interface Notification {
   id: string;

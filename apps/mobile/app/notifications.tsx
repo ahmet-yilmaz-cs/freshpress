@@ -10,6 +10,7 @@ import { api } from '../src/api/client';
 import { useAuth } from '../src/auth/AuthContext';
 import { BackBar, Card, Screen, Text } from '../src/components/ui';
 import { SectionHeader } from '../src/components/FreshPressPrimitives';
+import { Reveal } from '../src/components/Reveal';
 import { t } from '../src/i18n/strings';
 
 function NotificationIcon({ kind }: { kind: Notification['kind'] }) {
@@ -41,12 +42,13 @@ export default function Notifications() {
   return (
     <Screen edges={['top']} className="px-5">
       <BackBar onPress={() => router.back()} />
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ gap: 16, paddingBottom: 24 }}
-      >
+      <Reveal style={{ flex: 1 }}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ gap: 16, paddingBottom: 24 }}
+        >
         <View className="gap-2 pt-2">
-          <Text variant="display" className="text-[34px] leading-[42px]">
+          <Text variant="display" className="text-[28px] leading-[34px]">
             {t.notifications.title}
           </Text>
           <Text variant="body" className="text-[14px] leading-[20px]">
@@ -82,7 +84,8 @@ export default function Notifications() {
             ))}
           </View>
         ) : null}
-      </ScrollView>
+        </ScrollView>
+      </Reveal>
     </Screen>
   );
 }

@@ -11,9 +11,13 @@ import { api } from '../../src/api/client';
 import { useAuth } from '../../src/auth/AuthContext';
 import { AppHeader } from '../../src/components/AppHeader';
 import { JuiceVisual, MetricCard, SectionHeader } from '../../src/components/FreshPressPrimitives';
+import { Reveal } from '../../src/components/Reveal';
 import { Badge, Card, Screen, Text } from '../../src/components/ui';
-import { labels, t } from '../../src/i18n/strings';
+import { labels, t, upperTr } from '../../src/i18n/strings';
 import { appRoute } from '../../src/lib/route';
+
+/** Fixed pixel height of the weekly-calorie bar track (see chart note below). */
+const CHART_TRACK_H = 104;
 
 export default function Goals() {
   const { user } = useAuth();
@@ -51,10 +55,11 @@ export default function Goals() {
     <Screen edges={['top']}>
       <AppHeader title={t.goals.title} subtitle={t.goals.subtitle} compact />
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24, gap: 16 }}
-      >
+      <Reveal style={{ flex: 1 }}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24, gap: 16 }}
+        >
         <Card className="gap-4 border-green bg-green/30">
           <View className="flex-row items-center justify-between">
             <View>
@@ -112,13 +117,16 @@ export default function Goals() {
             action={t.goals.details}
             onAction={() => router.push(appRoute('/calories'))}
           />
-          <View className="h-32 flex-row items-end justify-between gap-2">
+          {/* Bars are sized in absolute px against a fixed track height: percentage
+              heights inside a flex parent don't resolve reliably on react-native-web,
+              which left the chart blank. Pixel heights render identically web + native. */}
+          <View className="flex-row items-end justify-between gap-2">
             {calories.days.map((day) => (
               <View key={day.label} className="flex-1 items-center gap-1">
-                <View className="w-full flex-1 justify-end">
+                <View style={{ height: CHART_TRACK_H, width: '100%', justifyContent: 'flex-end' }}>
                   <View
-                    className="w-full rounded-t-md bg-orange"
-                    style={{ height: `${Math.max(8, Math.round((day.calories / maxCal) * 100))}%` }}
+                    className="w-full rounded-t-md bg-amber/70"
+                    style={{ height: Math.max(6, Math.round((day.calories / maxCal) * CHART_TRACK_H)) }}
                   />
                 </View>
                 <Text variant="caption" className="tracking-normal">
@@ -159,14 +167,15 @@ export default function Goals() {
                   </Text>
                 </View>
                 <Badge
-                  label={(labels.quality[entry.quality] ?? entry.quality).toUpperCase()}
+                  label={upperTr(labels.quality[entry.quality] ?? entry.quality)}
                   tone={entry.quality === 'excellent' ? 'fresh' : 'amber'}
                 />
               </Card>
             </Pressable>
           ))}
         </View>
-      </ScrollView>
+        </ScrollView>
+      </Reveal>
     </Screen>
   );
 }

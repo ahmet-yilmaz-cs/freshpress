@@ -17,6 +17,7 @@ import type {
   HelpTopic,
   JuiceHistoryEntry,
   JuiceProgram,
+  JuicingSession,
   Notification,
   Recipe,
   Recommendation,
@@ -37,6 +38,7 @@ import {
   getNotifications,
   getRecipeById,
   getStock,
+  juicingSession,
   programs as allPrograms,
   publicUser,
   recipes as allRecipes,
@@ -195,6 +197,11 @@ export const api = {
   async programs(): Promise<{ programs: JuiceProgram[] }> {
     await sleep(LATENCY);
     return { programs: allPrograms };
+  },
+
+  async juicingSession(): Promise<{ session: JuicingSession }> {
+    await sleep(LATENCY);
+    return { session: juicingSession };
   },
 
   async stock(): Promise<{ stock: StockItem[] }> {

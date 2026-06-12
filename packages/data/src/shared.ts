@@ -2,6 +2,7 @@ import type {
   CreateRecipeInput,
   HelpTopic,
   JuiceProgram,
+  JuicingSession,
   Recipe,
   Recommendation,
   StockItem,
@@ -112,6 +113,20 @@ export const programs: JuiceProgram[] = [
   { id: 'p-green', name: 'Yeşil Detoks', volumeMl: 260, durationSec: 100, tone: 'green' },
   { id: 'p-vitamin-c', name: 'C Vitamini', volumeMl: 150, durationSec: 55, tone: 'orange' },
 ];
+
+/**
+ * Live juicing (Preparing) screen content. Ingredients are processed in order:
+ * the screen derives done/active/pending per item from overall progress.
+ */
+export const juicingSession: JuicingSession = {
+  ingredients: [
+    { id: 'ji-orange', name: 'Valensiya Portakalı', tone: 'orange' },
+    { id: 'ji-ginger', name: 'Taze Zencefil', tone: 'amber' },
+    { id: 'ji-apple', name: 'Yeşil Elma', tone: 'green' },
+  ],
+  benefits: ['Bağışıklık desteği', 'C vitamini'],
+  rpmBySpeed: { low: 55, medium: 80, high: 110 },
+};
 
 export const recommendations: Recommendation[] = [
   {

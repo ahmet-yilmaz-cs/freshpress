@@ -50,7 +50,6 @@ function RootNavigator() {
       <Stack.Screen name="calories" />
       <Stack.Screen name="settings" />
       <Stack.Screen name="recommendations" />
-      <Stack.Screen name="stock" />
       <Stack.Screen name="notifications" />
       <Stack.Screen name="juicing" options={{ gestureEnabled: false }} />
       <Stack.Screen name="ready" options={{ gestureEnabled: false, animation: 'fade' }} />

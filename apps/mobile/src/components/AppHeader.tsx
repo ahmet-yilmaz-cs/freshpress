@@ -26,7 +26,7 @@ export function AppHeader({
       <View className="min-w-0 flex-1">
         <Text
           variant={compact ? 'h2' : 'display'}
-          className={compact ? 'text-amber' : 'text-amber text-[34px] leading-[42px]'}
+          className={compact ? 'text-amber' : 'text-amber text-[28px] leading-[34px]'}
           numberOfLines={1}
         >
           {title}

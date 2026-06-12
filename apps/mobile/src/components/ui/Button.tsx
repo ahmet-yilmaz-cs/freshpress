@@ -42,7 +42,7 @@ export function Button({
       accessibilityRole="button"
       disabled={isDisabled}
       className={cn(
-        'h-[60px] rounded-full items-center justify-center px-6 active:opacity-90',
+        'h-[54px] rounded-full items-center justify-center px-6 active:opacity-90',
         surface[variant],
         isDisabled && 'opacity-50',
         className,

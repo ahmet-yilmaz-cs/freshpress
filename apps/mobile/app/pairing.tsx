@@ -1,14 +1,16 @@
 import type { Device } from '@freshpress/types';
 import { useRouter } from 'expo-router';
-import { Bluetooth, CheckCircle2, Info, RadioTower, WifiOff } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
+import { Bluetooth, Info, RadioTower } from 'lucide-react-native';
+import { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Animated, Easing, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { colors } from '@freshpress/design-system';
 
 import { api } from '../src/api/client';
 import { useAuth } from '../src/auth/AuthContext';
+import { DeviceImage } from '../src/components/DeviceImage';
 import { JuiceVisual, ListRow, SectionHeader } from '../src/components/FreshPressPrimitives';
+import { Reveal } from '../src/components/Reveal';
 import { BackBar, Badge, Button, Card, Screen, Text } from '../src/components/ui';
 import { t } from '../src/i18n/strings';
 import { appRoute } from '../src/lib/route';
@@ -43,12 +45,13 @@ export default function Pairing() {
   return (
     <Screen edges={['top']} className="px-5">
       <BackBar onPress={() => router.back()} />
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ gap: 16, paddingBottom: 24 }}
-      >
+      <Reveal style={{ flex: 1 }}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ gap: 16, paddingBottom: 24 }}
+        >
         <View className="gap-2 pt-2">
-          <Text variant="display" className="text-[34px] leading-[42px]">
+          <Text variant="display" className="text-[28px] leading-[34px]">
             {t.pairing.title}
           </Text>
           <Text variant="body" className="text-[14px] leading-[20px]">
@@ -57,16 +60,24 @@ export default function Pairing() {
         </View>
 
         <Card className="items-center gap-4">
-          <View
-            className={`h-36 w-36 items-center justify-center rounded-full ${connected ? 'bg-green' : 'bg-track'}`}
-          >
+          <View className="items-center justify-center" style={{ width: 168, height: 168 }}>
+            {/* Pulsing "searching for devices" rings while disconnected/pairing
+                (mirrors the prototype's animated signal disc). */}
+            {!connected ? (
+              <>
+                <ScanRing />
+                <ScanRing delay={900} />
+              </>
+            ) : null}
+            {/* Real device photo — greyed while offline, sharp once connected. */}
+            <DeviceImage size={140} radius={70} dimmed={!connected} />
             {busy ? (
-              <ActivityIndicator size="large" color={colors.amber} />
-            ) : connected ? (
-              <CheckCircle2 size={66} color={colors.greenInk} />
-            ) : (
-              <WifiOff size={66} color={colors.muted} />
-            )}
+              <View
+                style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center' }]}
+              >
+                <ActivityIndicator size="large" color={colors.white} />
+              </View>
+            ) : null}
           </View>
           <View className="items-center gap-2">
             <Text variant="h3">{device?.name ?? 'JuiceLab Pro X1'}</Text>
@@ -124,7 +135,50 @@ export default function Pairing() {
           loading={busy}
           onPress={toggle}
         />
-      </ScrollView>
+        </ScrollView>
+      </Reveal>
     </Screen>
+  );
+}
+
+/**
+ * A single warm "radar" ring that scales outward and fades — looped to suggest the
+ * device is actively scanning. Two staggered instances read as a sonar pulse.
+ * Uses the RN Animated API (web-safe) rather than Reanimated worklets.
+ */
+function ScanRing({ delay = 0 }: { delay?: number }) {
+  const progress = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const loop = Animated.loop(
+      Animated.timing(progress, {
+        toValue: 1,
+        duration: 1800,
+        delay,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }),
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [progress, delay]);
+
+  const scale = progress.interpolate({ inputRange: [0, 1], outputRange: [0.7, 1.45] });
+  const opacity = progress.interpolate({ inputRange: [0, 1], outputRange: [0.5, 0] });
+
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={{
+        position: 'absolute',
+        width: 144,
+        height: 144,
+        borderRadius: 72,
+        borderWidth: 2,
+        borderColor: colors.amber,
+        opacity,
+        transform: [{ scale }],
+      }}
+    />
   );
 }

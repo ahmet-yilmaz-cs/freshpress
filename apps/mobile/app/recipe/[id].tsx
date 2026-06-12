@@ -8,9 +8,12 @@ import { ScrollView, View } from 'react-native';
 import { colors } from '@freshpress/design-system';
 
 import { api } from '../../src/api/client';
-import { JuiceVisual, MetricCard, SectionHeader } from '../../src/components/FreshPressPrimitives';
+import { FoodImage } from '../../src/components/FoodImage';
+import { MetricCard, SectionHeader } from '../../src/components/FreshPressPrimitives';
+import { Reveal } from '../../src/components/Reveal';
+import { recipeImage } from '../../src/lib/foodImages';
 import { BackBar, Badge, Button, Card, Screen, Text } from '../../src/components/ui';
-import { t } from '../../src/i18n/strings';
+import { t, upperTr } from '../../src/i18n/strings';
 
 export default function RecipeDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -39,18 +42,19 @@ export default function RecipeDetail() {
   return (
     <Screen edges={['top']} className="px-5">
       <BackBar onPress={() => router.back()} />
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ gap: 16, paddingBottom: 24 }}
-      >
-        <Card className="items-center gap-5 overflow-hidden bg-subtle border-border-warm/40">
-          <JuiceVisual tone={recipe.tone} label={recipe.category} />
-          <View className="items-center gap-2">
+      <Reveal style={{ flex: 1 }}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ gap: 16, paddingBottom: 24 }}
+        >
+        <Card className="overflow-hidden p-0">
+          <FoodImage source={recipeImage(recipe.id, recipe.tone)} radius={0} style={{ height: 200 }} />
+          <View className="items-center gap-2 p-5">
             <Badge
-              label={recipe.category.toUpperCase()}
+              label={upperTr(recipe.category)}
               tone={recipe.tone === 'green' ? 'fresh' : 'amber'}
             />
-            <Text variant="display" className="text-center text-[34px] leading-[42px]">
+            <Text variant="display" className="text-center text-[28px] leading-[34px]">
               {recipe.title}
             </Text>
             <Text variant="body" className="text-center text-[14px] leading-[20px]">
@@ -139,7 +143,8 @@ export default function RecipeDetail() {
             {t.recipe.startHint}
           </Text>
         </View>
-      </ScrollView>
+        </ScrollView>
+      </Reveal>
     </Screen>
   );
 }

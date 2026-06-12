@@ -68,6 +68,7 @@ export const t = {
     title: 'FreshPress',
     subtitle: 'Akıllı makine kontrolü',
     premiumSeries: 'PREMIUM SERİ',
+    tagline: 'Mükemmel besin ekstraksiyonu için akıllı yardımcın.',
     ready: 'HAZIR',
     notConnected: 'BAĞLI DEĞİL',
     deviceInfo: 'Cihaz bilgileri',
@@ -87,6 +88,8 @@ export const t = {
   explore: {
     title: 'Keşfet',
     subtitle: 'Tarifler, öneriler ve özel karışımlar',
+    heroEyebrow: 'TAZE & SAĞLIKLI',
+    heroTitle: 'Bugün ne sıkalım?',
     searchPlaceholder: 'Tarif ara',
     forYou: 'Senin için',
     recipes: 'Tarifler',
@@ -159,6 +162,8 @@ export const t = {
     details: 'Detaylar',
     recentJuices: 'Son sıkımlar',
     viewAll: 'Tümünü gör',
+    stockInfo: 'Stok bilgisi',
+    stockInfoSub: 'Haftalık plan için malzeme seviyeleri',
   },
   settings: {
     title: 'Ayarlar',
@@ -276,6 +281,12 @@ export const t = {
     finishNow: 'Şimdi Bitir',
     fallbackTitle: 'içeceğin',
     fallbackTitleCap: 'İçeceğin',
+    remaining: 'KALDI',
+    speedSetting: 'HIZ AYARI',
+    rpm: 'rpm',
+    currentIngredients: 'Şu anki malzemeler',
+    extractedBenefits: 'Elde edilen faydalar',
+    active: 'AKTİF',
   },
   ready: {
     badge: 'TAZE SIKILDI',
@@ -288,8 +299,13 @@ export const t = {
     proTip: 'İpucu',
     proTipBody: 'İlk yudumdan önce doğal lifleri dağıtmak için hafifçe çevir.',
     undoLog: 'Kalori Kaydını Geri Al',
-    logAgain: 'Tekrar Kaydet',
+    logAgain: 'Kalori Kaydet',
     newDrink: 'Yeni İçecek',
+    readySuffix: 'hazır!',
+    bodyIntro: 'Kişisel karışımın mükemmel dengede ve seni bekliyor.',
+    loggedBox: 'kcal bugüne eklendi',
+    notLoggedBox: 'Kaydedilmedi · demo servis',
+    calorieDetails: 'Kalori Detayları',
     calories: 'Kaloriler',
     history: 'Geçmiş',
     note: 'Kayıt durumu prototip oturumu için sahtedir.',
@@ -335,4 +351,14 @@ export const labels = {
 /** Turkish label for a device status key (falls back to "Çevrimdışı"). */
 export function statusLabel(status?: string): string {
   return (status ? labels.deviceStatus[status] : undefined) ?? 'Çevrimdışı';
+}
+
+/**
+ * Turkish-safe uppercase. JS `toUpperCase()` maps "i" → "I" (dotless), but Turkish
+ * needs "i" → "İ" (dotted) and "ı" → "I". We remap the i/ı pair explicitly first so
+ * the result is correct on both web and Hermes (which lacks full ICU locale casing).
+ * e.g. "Senin için" → "SENİN İÇİN", "Tarifler" → "TARİFLER".
+ */
+export function upperTr(value: string): string {
+  return value.replace(/i/g, 'İ').replace(/ı/g, 'I').toUpperCase();
 }

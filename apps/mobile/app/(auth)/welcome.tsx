@@ -1,14 +1,17 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { colors } from '@freshpress/design-system';
 
 import { useAuth } from '../../src/auth/AuthContext';
-import { JuiceVisual } from '../../src/components/FreshPressPrimitives';
-import { t } from '../../src/i18n/strings';
+import { Reveal } from '../../src/components/Reveal';
 import { AppleButton, Badge, Button, Screen, Text } from '../../src/components/ui';
+import { t } from '../../src/i18n/strings';
+import { images } from '../../src/lib/images';
 import { alpha } from '../../src/lib/visuals';
 
 export default function Welcome() {
@@ -26,45 +29,70 @@ export default function Welcome() {
   }
 
   return (
-    <Screen className="px-5">
-      <LinearGradient
-        colors={[alpha(colors.orange, 0.08), colors.bg]}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 0.72 }}
-        style={{ flex: 1, borderRadius: 12, paddingTop: 8 }}
-      >
-        <View className="flex-1 px-2">
-          <View className="flex-[1.2] items-center justify-end">
-            <View className="h-72 w-full items-center justify-center rounded-lg bg-card">
-              <JuiceVisual tone="orange" size="large" label="JuiceLab X1" />
-            </View>
-          </View>
+    <Screen edges={['bottom']}>
+      {/* Light status-bar icons sit over the darkened top of the hero photo. */}
+      <StatusBar style="light" />
 
-          <View className="flex-1 items-center justify-center gap-6 pt-8">
-            <Badge label={t.welcome.badge} tone="fresh" />
-            <Text variant="display" className="text-center px-4">
+      {/* Full-bleed product photo: bleeds under the status bar, rounds off at the
+          bottom so it melts into the page. Scrims add depth + text legibility. */}
+      <View className="overflow-hidden rounded-b-[36px]" style={{ flex: 1.2 }}>
+        <Image source={images.heroJuicer} resizeMode="cover" style={StyleSheet.absoluteFill} />
+        <LinearGradient
+          colors={[alpha(colors.ink, 0.38), 'transparent', alpha(colors.ink, 0.58)]}
+          locations={[0, 0.42, 1]}
+          style={StyleSheet.absoluteFill}
+        />
+        <SafeAreaView edges={['top']} style={{ flex: 1 }}>
+          <View className="flex-1 justify-between px-6 pb-7 pt-3">
+            <Reveal delay={80} distance={10}>
+              <Text variant="h3" className="text-[22px] font-bold text-white">
+                FreshPress
+              </Text>
+            </Reveal>
+            <Reveal delay={560} distance={14}>
+              <View className="flex-row">
+                <Badge label={t.welcome.badge} tone="fresh" />
+              </View>
+            </Reveal>
+          </View>
+        </SafeAreaView>
+      </View>
+
+      {/* Copy + actions, revealed in a smooth downward stagger. */}
+      <View className="flex-1 justify-between px-6 pt-7">
+        <View className="gap-3">
+          <Reveal delay={180}>
+            <Text variant="display" className="text-[36px] leading-[42px]">
               {t.welcome.title}
             </Text>
-            <Text variant="body" className="text-center text-[14px] leading-[20px]">
+          </Reveal>
+          <Reveal delay={260}>
+            <Text variant="body" className="text-[15px] leading-[22px]">
               {t.welcome.subtitle}
             </Text>
-          </View>
+          </Reveal>
+        </View>
 
-          <View className="gap-3 pb-2">
+        <View className="gap-3 pb-2">
+          <Reveal delay={360}>
             <Button
               title={t.welcome.getStarted}
               variant="primary"
               onPress={() => router.push('/(auth)/register')}
             />
+          </Reveal>
+          <Reveal delay={420}>
             <Button
               title={t.welcome.login}
               variant="secondary"
               onPress={() => router.push('/(auth)/login')}
             />
+          </Reveal>
+          <Reveal delay={480}>
             <AppleButton onPress={onApple} loading={appleLoading} />
-          </View>
+          </Reveal>
         </View>
-      </LinearGradient>
+      </View>
     </Screen>
   );
 }
