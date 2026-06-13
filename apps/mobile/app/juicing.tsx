@@ -1,4 +1,4 @@
-import type { ExtractionSpeed, JuicingSession } from '@freshpress/types';
+import type { ExtractionSpeed, JuicingIngredient, JuicingSession } from '@freshpress/types';
 import { clamp } from '@freshpress/utils';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Check, Gauge, Pause, Play, Timer, X } from 'lucide-react-native';
@@ -28,12 +28,14 @@ function formatRemaining(pct: number): string {
 export default function Juicing() {
   const router = useRouter();
   const { user } = useAuth();
-  const { title } = useLocalSearchParams<{ title?: string }>();
+  const { title, recipeId } = useLocalSearchParams<{ title?: string; recipeId?: string }>();
   const [pct, setPct] = useState(0);
   const [paused, setPaused] = useState(false);
   const pausedRef = useRef(false);
   const [session, setSession] = useState<JuicingSession | null>(null);
   const [speed, setSpeed] = useState<ExtractionSpeed>('medium');
+  const [recipeIngredients, setRecipeIngredients] = useState<JuicingIngredient[] | null>(null);
+  const [recipeBenefits, setRecipeBenefits] = useState<string[] | null>(null);
 
   useEffect(() => {
     api
@@ -46,7 +48,26 @@ export default function Juicing() {
         .then((res) => setSpeed(res.device.speed))
         .catch(() => {});
     }
-  }, [user?.id]);
+    if (recipeId) {
+      Promise.all([
+        api.recipe(recipeId).catch(() => ({ recipe: null })),
+        api.stock().catch(() => ({ stock: [] })),
+      ]).then(([recipeRes, stockRes]) => {
+        const recipe = recipeRes.recipe;
+        if (!recipe) return;
+        const stockMap = new Map(stockRes.stock.map((s) => [s.name.toLowerCase(), s]));
+        const mapped: JuicingIngredient[] = recipe.ingredients.map((name, index) => {
+          const baseName = name.replace(/\s*\(\d+\)$/, '').trim();
+          const stockItem = stockMap.get(baseName.toLowerCase());
+          return stockItem
+            ? { id: stockItem.id, name: stockItem.name, tone: stockItem.tone }
+            : { id: `ri-${index}`, name: baseName, tone: recipe.tone };
+        });
+        setRecipeIngredients(mapped);
+        setRecipeBenefits(recipe.benefits);
+      });
+    }
+  }, [user?.id, recipeId]);
 
   useEffect(() => {
     const tick = setInterval(() => {
@@ -68,7 +89,8 @@ export default function Juicing() {
     setPaused(pausedRef.current);
   }
 
-  const ingredients = session?.ingredients ?? [];
+  const ingredients = recipeIngredients ?? session?.ingredients ?? [];
+  const benefits = recipeBenefits ?? session?.benefits ?? [];
   const window = ingredients.length ? 100 / ingredients.length : 100;
   const rpm = session?.rpmBySpeed[speed] ?? 80;
 
@@ -181,13 +203,13 @@ export default function Juicing() {
           })}
         </View>
 
-        {session?.benefits.length ? (
+        {benefits.length ? (
           <Card className="gap-3 bg-green/20 border-green/50">
             <Text variant="eyebrow" className="text-green-ink">
               {upperTr(t.juicing.extractedBenefits)}
             </Text>
             <View className="flex-row flex-wrap gap-2">
-              {session.benefits.map((benefit, index) => (
+              {benefits.map((benefit, index) => (
                 <Badge
                   key={benefit}
                   label={benefit.toUpperCase()}

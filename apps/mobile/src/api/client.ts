@@ -161,7 +161,7 @@ export const api = {
 
   async recipes(): Promise<{ recipes: Recipe[] }> {
     await sleep(LATENCY);
-    return { recipes: allRecipes };
+    return { recipes: [...allRecipes] };
   },
 
   async recipe(id: string): Promise<{ recipe: Recipe | null }> {

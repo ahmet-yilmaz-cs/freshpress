@@ -1,23 +1,22 @@
-import type { Recipe, Recommendation, StockItem } from '@freshpress/types';
+import type { Recipe, Recommendation } from '@freshpress/types';
 import { formatDuration } from '@freshpress/utils';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
-import { Check, HeartPulse, Plus, Search, ShieldCheck, Sun, Zap } from 'lucide-react-native';
-import { useEffect, useMemo, useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { HeartPulse, Plus, Search, ShieldCheck, Sun, Zap } from 'lucide-react-native';
+import { useCallback, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 
 import { colors } from '@freshpress/design-system';
 
 import { api } from '../../src/api/client';
 import { AppHeader } from '../../src/components/AppHeader';
-import { BottomSheet } from '../../src/components/BottomSheet';
 import { FoodImage } from '../../src/components/FoodImage';
 import { SectionHeader } from '../../src/components/FreshPressPrimitives';
 import { Reveal } from '../../src/components/Reveal';
-import { Button, Card, Input, Screen, Text } from '../../src/components/ui';
-import { labels, t } from '../../src/i18n/strings';
+import { Button, Card, Screen, Text } from '../../src/components/ui';
+import { t } from '../../src/i18n/strings';
 import { cn } from '../../src/lib/cn';
-import { ingredientImage, recipeImage } from '../../src/lib/foodImages';
+import { recipeImage } from '../../src/lib/foodImages';
 import { images } from '../../src/lib/images';
 import { alpha, toneFor } from '../../src/lib/visuals';
 
@@ -37,28 +36,22 @@ export default function Explore() {
   const router = useRouter();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
-  const [stock, setStock] = useState<StockItem[]>([]);
-  const [sheetOpen, setSheetOpen] = useState(false);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [selected, setSelected] = useState<string[]>([]);
-  const [saving, setSaving] = useState(false);
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
-  useEffect(() => {
-    load();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, []),
+  );
 
   async function load() {
-    const [recipeRes, recRes, stockRes] = await Promise.all([
+    const [recipeRes, recRes] = await Promise.all([
       api.recipes().catch(() => ({ recipes: [] })),
       api.recommendations().catch(() => ({ recommendations: [] })),
-      api.stock().catch(() => ({ stock: [] })),
     ]);
     setRecipes(recipeRes.recipes);
     setRecommendations(recRes.recommendations);
-    setStock(stockRes.stock);
   }
 
   const q = query.trim().toLowerCase();
@@ -69,32 +62,6 @@ export default function Explore() {
     (!activeCategory || recipe.category === activeCategory);
   const customRecipes = recipes.filter((recipe) => recipe.isCustom && matches(recipe));
   const catalogRecipes = recipes.filter((recipe) => !recipe.isCustom && matches(recipe));
-  const selectedCalories = useMemo(
-    () =>
-      selected
-        .map((id) => stock.find((item) => item.id === id)?.caloriesPerUnit ?? 0)
-        .reduce((total, value) => total + value, 0),
-    [selected, stock],
-  );
-
-  function toggleIngredient(id: string) {
-    setSelected((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
-  }
-
-  async function saveRecipe() {
-    if (!title.trim() || selected.length === 0) return;
-    setSaving(true);
-    try {
-      await api.addRecipe({ title, description, ingredientIds: selected });
-      setTitle('');
-      setDescription('');
-      setSelected([]);
-      setSheetOpen(false);
-      await load();
-    } finally {
-      setSaving(false);
-    }
-  }
 
   return (
     <Screen edges={['top']}>
@@ -203,7 +170,7 @@ export default function Explore() {
           )}
         </View>
 
-        <SectionHeader title={t.explore.myRecipes} action={t.common.add} onAction={() => setSheetOpen(true)} />
+        <SectionHeader title={t.explore.myRecipes} action={t.common.add} onAction={() => router.push('/add-recipe')} />
         {customRecipes.length ? (
           <View className="gap-3">
             {customRecipes.map((recipe) => (
@@ -225,79 +192,11 @@ export default function Explore() {
             <Text variant="body" className="text-center text-[14px] leading-[20px]">
               {t.explore.emptySubtitle}
             </Text>
-            <Button title={t.explore.addRecipe} onPress={() => setSheetOpen(true)} className="w-full" />
+            <Button title={t.explore.addRecipe} onPress={() => router.push('/add-recipe')} className="w-full" />
           </Card>
         )}
         </ScrollView>
       </Reveal>
-
-      <BottomSheet
-        visible={sheetOpen}
-        title={t.explore.sheetTitle}
-        subtitle={t.explore.sheetSubtitle}
-        onClose={() => setSheetOpen(false)}
-      >
-        <Input
-          label={t.explore.fieldTitle}
-          value={title}
-          onChangeText={setTitle}
-          placeholder={t.explore.titlePlaceholder}
-          bottomSheet
-        />
-        <Input
-          label={t.explore.fieldDescription}
-          value={description}
-          onChangeText={setDescription}
-          placeholder={t.explore.descPlaceholder}
-          multiline
-          bottomSheet
-          style={{ minHeight: 96, paddingTop: 14, textAlignVertical: 'top' }}
-        />
-        <Card className="items-center gap-1 bg-orange/10 border-orange/20">
-          <Text variant="display" className="text-[30px] leading-[36px] text-amber">
-            {selectedCalories || 0}
-          </Text>
-          <Text variant="caption" className="tracking-normal">
-            {t.explore.estimatedKcal}
-          </Text>
-        </Card>
-        <SectionHeader title={t.explore.ingredients} />
-        {stock.map((item) => {
-          const active = selected.includes(item.id);
-          return (
-            <Pressable
-              key={item.id}
-              onPress={() => toggleIngredient(item.id)}
-              className={cn(
-                'flex-row items-center gap-3 rounded-md border bg-card p-3 active:opacity-80',
-                active ? 'border-green bg-green/20' : 'border-hairline',
-              )}
-            >
-              <FoodImage source={ingredientImage(item.id, item.name, item.tone)} radius={12} style={{ width: 56, height: 56 }} />
-              <View className="min-w-0 flex-1">
-                <Text variant="body" className="text-ink" numberOfLines={1}>
-                  {item.name}
-                </Text>
-                <Text variant="caption" className="tracking-normal">
-                  {item.caloriesPerUnit} {t.common.kcal} · {item.amount} {labels.unit[item.unit] ?? item.unit}
-                </Text>
-              </View>
-              {active ? (
-                <View className="h-7 w-7 items-center justify-center rounded-full bg-green">
-                  <Check size={16} color={colors.greenInk} />
-                </View>
-              ) : null}
-            </Pressable>
-          );
-        })}
-        <Button
-          title={t.explore.saveRecipe}
-          loading={saving}
-          disabled={!title.trim() || selected.length === 0}
-          onPress={saveRecipe}
-          className="mt-2"
-        />
-      </BottomSheet>
     </Screen>
   );
 }

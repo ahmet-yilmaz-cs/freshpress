@@ -1,13 +1,12 @@
 import type { StockItem } from '@freshpress/types';
-import { useRouter } from 'expo-router';
-import { AlertTriangle, Minus, Package, Plus, Search } from 'lucide-react-native';
-import { useEffect, useMemo, useState } from 'react';
-import { Pressable, ScrollView, View } from 'react-native';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { AlertTriangle, Package, Search } from 'lucide-react-native';
+import { useCallback, useMemo, useState } from 'react';
+import { ScrollView, View } from 'react-native';
 
 import { colors } from '@freshpress/design-system';
 
 import { AppHeader } from '../../src/components/AppHeader';
-import { BottomSheet } from '../../src/components/BottomSheet';
 import { FoodImage } from '../../src/components/FoodImage';
 import { SectionHeader } from '../../src/components/FreshPressPrimitives';
 import { Reveal } from '../../src/components/Reveal';
@@ -27,55 +26,29 @@ const unitLabel = (unit: string) => labels.unit[unit] ?? unit;
 export default function Stock() {
   const router = useRouter();
   const [items, setItems] = useState<StockItem[]>([]);
-  const [sheetOpen, setSheetOpen] = useState(false);
-  const [draft, setDraft] = useState<Record<string, number>>({});
-  const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    load();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, []),
+  );
 
   async function load() {
     const response = await api.stock().catch(() => ({ stock: [] }));
     setItems(response.stock);
-    setDraft(Object.fromEntries(response.stock.map((item) => [item.id, item.amount])));
   }
 
-  const lowItems = items.filter((item) => item.level < 30);
+  const visibleItems = items.filter((item) => item.amount > 0);
+  const lowItems = visibleItems.filter((item) => item.level < 30);
   const grouped = useMemo(() => {
-    return items.reduce<Record<StockItem['category'], StockItem[]>>(
+    return visibleItems.reduce<Record<StockItem['category'], StockItem[]>>(
       (acc, item) => {
         acc[item.category].push(item);
         return acc;
       },
       { fruit: [], vegetable: [], booster: [] },
     );
-  }, [items]);
-
-  function openSheet() {
-    setDraft(Object.fromEntries(items.map((item) => [item.id, item.amount])));
-    setSheetOpen(true);
-  }
-
-  function step(id: string, delta: number) {
-    setDraft((prev) => ({ ...prev, [id]: Math.max(0, (prev[id] ?? 0) + delta) }));
-  }
-
-  async function save() {
-    setSaving(true);
-    try {
-      let latest = items;
-      for (const item of items) {
-        const amount = draft[item.id] ?? item.amount;
-        const response = await api.updateStockItem(item.id, amount);
-        latest = response.stock;
-      }
-      setItems(latest);
-      setSheetOpen(false);
-    } finally {
-      setSaving(false);
-    }
-  }
+  }, [visibleItems]);
 
   return (
     <Screen edges={['top']}>
@@ -107,7 +80,7 @@ export default function Stock() {
             </View>
           ) : null}
           <View className="flex-row gap-3">
-            <Button title={t.stock.editStock} onPress={openSheet} className="flex-1" />
+            <Button title={t.stock.editStock} onPress={() => router.push('/stock-edit')} className="flex-1" />
             <Button
               title={t.stock.recipes}
               variant="secondary"
@@ -129,50 +102,6 @@ export default function Stock() {
         )}
         </ScrollView>
       </Reveal>
-
-      <BottomSheet
-        visible={sheetOpen}
-        title={t.stock.sheetTitle}
-        subtitle={t.stock.sheetSubtitle}
-        onClose={() => setSheetOpen(false)}
-      >
-        {items.map((item) => (
-          <View
-            key={item.id}
-            className="flex-row items-center gap-3 rounded-md border border-hairline bg-card p-3"
-          >
-            <FoodImage source={ingredientImage(item.id, item.name, item.tone)} radius={12} style={{ width: 56, height: 56 }} />
-            <View className="min-w-0 flex-1">
-              <Text variant="body" className="text-ink" numberOfLines={1}>
-                {item.name}
-              </Text>
-              <Text variant="caption" className="tracking-normal">
-                {labels.stockCategory[item.category]} · {unitLabel(item.unit)}
-              </Text>
-            </View>
-            <View className="flex-row items-center gap-3">
-              <Pressable
-                accessibilityRole="button"
-                onPress={() => step(item.id, -1)}
-                className="h-11 w-11 items-center justify-center rounded-full bg-subtle active:opacity-70"
-              >
-                <Minus size={18} color={colors.muted} />
-              </Pressable>
-              <Text variant="h3" className="w-10 text-center">
-                {draft[item.id] ?? item.amount}
-              </Text>
-              <Pressable
-                accessibilityRole="button"
-                onPress={() => step(item.id, 1)}
-                className="h-11 w-11 items-center justify-center rounded-full bg-green active:opacity-70"
-              >
-                <Plus size={18} color={colors.greenInk} />
-              </Pressable>
-            </View>
-          </View>
-        ))}
-        <Button title={t.stock.saveStock} loading={saving} onPress={save} className="mt-2" />
-      </BottomSheet>
     </Screen>
   );
 }

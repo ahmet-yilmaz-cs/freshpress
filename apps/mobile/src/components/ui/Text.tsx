@@ -19,5 +19,11 @@ export function Text({
   className,
   ...props
 }: TextProps & { variant?: Variant; className?: string }) {
-  return <RNText className={cn(variants[variant], className)} {...props} />;
+  return (
+    <RNText
+      allowFontScaling={false}
+      className={cn(variants[variant], className)}
+      {...props}
+    />
+  );
 }

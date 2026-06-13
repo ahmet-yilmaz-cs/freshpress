@@ -134,7 +134,7 @@ export default function RecipeDetail() {
         <Button
           title={t.recipe.startJuicing}
           variant="fresh"
-          onPress={() => router.push(`/juicing?title=${encodeURIComponent(recipe.title)}`)}
+          onPress={() => router.push(`/juicing?title=${encodeURIComponent(recipe.title)}&recipeId=${encodeURIComponent(recipe.id)}`)}
           className="mt-2"
         />
         <View className="flex-row items-center justify-center gap-2">

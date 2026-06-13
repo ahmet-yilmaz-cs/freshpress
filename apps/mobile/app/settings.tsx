@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { Bell, CircleHelp, Database, Globe, Moon, ShieldCheck } from 'lucide-react-native';
 import type { ReactNode } from 'react';
-import { ScrollView, Switch, View } from 'react-native';
+import { Pressable, ScrollView, Switch, View } from 'react-native';
 
 import { colors } from '@freshpress/design-system';
 
@@ -101,12 +101,40 @@ export default function Settings() {
                   {item.sub}
                 </Text>
               </View>
-              <Switch
-                value={prefs[item.key]}
-                onValueChange={(value) => setPref(item.key, value)}
-                trackColor={{ true: colors.orange, false: colors.track }}
-                thumbColor={colors.white}
-              />
+              {item.key === 'metric' ? (
+                <View className="flex-row overflow-hidden rounded-lg border border-hairline">
+                  <Pressable
+                    onPress={() => setPref('metric', true)}
+                    className={`px-4 py-2 ${prefs.metric ? 'bg-orange' : 'bg-card'}`}
+                  >
+                    <Text
+                      variant="button"
+                      className={`text-[13px] leading-[18px] ${prefs.metric ? 'text-white' : 'text-muted'}`}
+                    >
+                      ml
+                    </Text>
+                  </Pressable>
+                  <View className="w-px bg-hairline" />
+                  <Pressable
+                    onPress={() => setPref('metric', false)}
+                    className={`px-4 py-2 ${!prefs.metric ? 'bg-orange' : 'bg-card'}`}
+                  >
+                    <Text
+                      variant="button"
+                      className={`text-[13px] leading-[18px] ${!prefs.metric ? 'text-white' : 'text-muted'}`}
+                    >
+                      oz
+                    </Text>
+                  </Pressable>
+                </View>
+              ) : (
+                <Switch
+                  value={prefs[item.key]}
+                  onValueChange={(value) => setPref(item.key, value)}
+                  trackColor={{ true: colors.orange, false: colors.track }}
+                  thumbColor={colors.white}
+                />
+              )}
             </View>
           ))}
         </Card>

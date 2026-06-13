@@ -57,29 +57,45 @@ const PRODUCE = {
 } as const;
 
 const BY_INGREDIENT: Record<string, ImageSourcePropType> = {
-  's-apple': PRODUCE.apple,
-  'ji-apple': PRODUCE.apple,
-  's-orange': PRODUCE.orange,
-  'ji-orange': PRODUCE.orange,
-  's-carrot': PRODUCE.carrot,
-  's-lemon': PRODUCE.lemon,
-  's-kale': PRODUCE.kale,
-  's-ginger': PRODUCE.ginger,
-  'ji-ginger': PRODUCE.ginger,
-  's-beet': PRODUCE.beet,
-  's-mint': PRODUCE.mint,
+  // Existing produce photos
+  's-apple':      PRODUCE.apple,
+  'ji-apple':     PRODUCE.apple,
+  's-orange':     PRODUCE.orange,
+  'ji-orange':    PRODUCE.orange,
+  's-carrot':     PRODUCE.carrot,
+  's-lemon':      PRODUCE.lemon,
+  's-kale':       PRODUCE.kale,
+  's-ginger':     PRODUCE.ginger,
+  'ji-ginger':    PRODUCE.ginger,
+  's-beet':       PRODUCE.beet,
+  's-mint':       PRODUCE.mint,
+  // New fruits — mapped to closest existing food photos
+  's-strawberry': FOOD.berry,       // kırmızı meyveler
+  's-pineapple':  FOOD.tropical,    // tropikal meyve
+  's-watermelon': FOOD.watermelon,  // karpuz suyu görseli
+  // New vegetables — mapped to closest existing produce photos
+  's-cucumber':   PRODUCE.kale,     // yeşil, yapraklı
+  's-spinach':    PRODUCE.mint,     // yeşil yaprak
+  's-celery':     PRODUCE.ginger,   // açık renkli sap
 };
 
 /** Turkish ingredient-name → produce photo, for items whose id we don't recognise. */
 const NAME_HINTS: ReadonlyArray<[string, ImageSourcePropType]> = [
-  ['elma', PRODUCE.apple],
-  ['portakal', PRODUCE.orange],
-  ['havuç', PRODUCE.carrot],
-  ['limon', PRODUCE.lemon],
+  ['elma',       PRODUCE.apple],
+  ['portakal',   PRODUCE.orange],
+  ['havuç',      PRODUCE.carrot],
+  ['limon',      PRODUCE.lemon],
   ['karalahana', PRODUCE.kale],
-  ['zencefil', PRODUCE.ginger],
-  ['pancar', PRODUCE.beet],
-  ['nane', PRODUCE.mint],
+  ['zencefil',   PRODUCE.ginger],
+  ['pancar',     PRODUCE.beet],
+  ['nane',       PRODUCE.mint],
+  ['misket',     PRODUCE.lemon],
+  ['çilek',      FOOD.berry],
+  ['ananas',     FOOD.tropical],
+  ['karpuz',     FOOD.watermelon],
+  ['salatalık',  PRODUCE.kale],
+  ['ispanak',    PRODUCE.mint],
+  ['kereviz',    PRODUCE.ginger],
 ];
 
 /** Photo for a recipe (by id, then tone, then a neutral juice fallback). */

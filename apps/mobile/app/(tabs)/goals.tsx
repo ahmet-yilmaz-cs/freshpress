@@ -1,9 +1,8 @@
 import type { CalorieDay, JuiceHistoryEntry, WeeklyGoals } from '@freshpress/types';
-import { clamp } from '@freshpress/utils';
 import { useRouter } from 'expo-router';
-import { Flame, Target, TrendingUp } from 'lucide-react-native';
+import { Flame, TrendingUp } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, View } from 'react-native';
+import { Pressable, ScrollView, TouchableOpacity, View } from 'react-native';
 
 import { colors } from '@freshpress/design-system';
 
@@ -45,7 +44,8 @@ export default function Goals() {
       .catch(() => setHistory([]));
   }, [user?.id]);
 
-  const progress = goals ? clamp(goals.count / goals.goal, 0, 1) : 0;
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
+
   const maxCal = Math.max(1, ...calories.days.map((d) => d.calories));
   const average = Math.round(
     calories.days.reduce((sum, day) => sum + day.calories, 0) / Math.max(1, calories.days.length),
@@ -60,30 +60,26 @@ export default function Goals() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24, gap: 16 }}
         >
-        <Card className="gap-4 border-green bg-green/30">
+        <Card className="gap-3 border-green bg-green/30">
           <View className="flex-row items-center justify-between">
-            <View>
+            <View className="gap-1">
               <Text variant="eyebrow" className="text-green-ink">
-                {t.goals.thisWeek}
+                {t.goals.streakSuffix}
               </Text>
               <View className="flex-row items-end">
                 <Text variant="display" className="text-green-ink">
-                  {goals?.count ?? 0}
+                  {goals?.streakDays ?? 0}
                 </Text>
                 <Text variant="h3" className="mb-2 ml-1 text-green-ink">
-                  / {goals?.goal ?? 20}
+                  gün
                 </Text>
               </View>
             </View>
-            <Target size={44} color={colors.greenInk} />
+            <Flame size={44} color={colors.greenInk} />
           </View>
-          <View className="h-3 w-full overflow-hidden rounded-full bg-white/70">
-            <View
-              className="h-3 rounded-full bg-green-ink"
-              style={{ width: `${Math.round(progress * 100)}%` }}
-            />
-          </View>
-          <Badge label={`${goals?.streakDays ?? 0} ${t.goals.streakSuffix}`} tone="fresh" />
+          <Text variant="caption" className="text-green-ink/80 tracking-normal">
+            {t.goals.thisWeek.toLowerCase()} {goals?.count ?? 0} sıkım yapıldı
+          </Text>
         </Card>
 
         <View className="flex-row gap-3">
@@ -117,23 +113,50 @@ export default function Goals() {
             action={t.goals.details}
             onAction={() => router.push(appRoute('/calories'))}
           />
-          {/* Bars are sized in absolute px against a fixed track height: percentage
-              heights inside a flex parent don't resolve reliably on react-native-web,
-              which left the chart blank. Pixel heights render identically web + native. */}
-          <View className="flex-row items-end justify-between gap-2">
-            {calories.days.map((day) => (
-              <View key={day.label} className="flex-1 items-center gap-1">
-                <View style={{ height: CHART_TRACK_H, width: '100%', justifyContent: 'flex-end' }}>
-                  <View
-                    className="w-full rounded-t-md bg-amber/70"
-                    style={{ height: Math.max(6, Math.round((day.calories / maxCal) * CHART_TRACK_H)) }}
-                  />
+          {/* Bars sized in absolute px — tap a bar to reveal its kcal value above it. */}
+          <View>
+            <View className="flex-row justify-between gap-2" style={{ marginBottom: 2 }}>
+              {calories.days.map((day) => (
+                <View key={day.label} className="flex-1 items-center" style={{ height: 16 }}>
+                  {selectedDay === day.label && day.calories > 0 && (
+                    <Text
+                      variant="caption"
+                      className="text-amber tracking-normal"
+                      style={{ fontSize: 9, fontWeight: '700' }}
+                    >
+                      {day.calories} kcal
+                    </Text>
+                  )}
                 </View>
-                <Text variant="caption" className="tracking-normal">
-                  {day.label}
-                </Text>
-              </View>
-            ))}
+              ))}
+            </View>
+            <View className="flex-row items-end justify-between gap-2">
+              {calories.days.map((day) => {
+                const isSelected = selectedDay === day.label;
+                return (
+                  <TouchableOpacity
+                    key={day.label}
+                    activeOpacity={0.75}
+                    onPress={() => setSelectedDay((cur) => (cur === day.label ? null : day.label))}
+                    className="flex-1 items-center gap-1"
+                  >
+                    <View style={{ height: CHART_TRACK_H, width: '100%', justifyContent: 'flex-end' }}>
+                      <View
+                        className={`w-full rounded-t-md ${isSelected ? 'bg-amber' : 'bg-amber/70'}`}
+                        style={{ height: Math.max(6, Math.round((day.calories / maxCal) * CHART_TRACK_H)) }}
+                      />
+                    </View>
+                    <Text
+                      variant="caption"
+                      className={`tracking-normal ${isSelected ? 'text-amber' : ''}`}
+                      style={isSelected ? { fontWeight: '700' } : undefined}
+                    >
+                      {day.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           </View>
         </Card>
 

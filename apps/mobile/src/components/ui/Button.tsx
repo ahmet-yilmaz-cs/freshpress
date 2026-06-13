@@ -53,7 +53,7 @@ export function Button({
         {loading && (
           <ActivityIndicator color={variant === 'primary' ? colors.white : colors.amber} />
         )}
-        <Text variant="button" className={label[variant]}>
+        <Text variant="button" className={label[variant]} numberOfLines={1} adjustsFontSizeToFit>
           {title}
         </Text>
       </View>

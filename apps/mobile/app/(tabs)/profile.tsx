@@ -6,7 +6,6 @@ import {
   Settings,
   ShieldCheck,
   Smartphone,
-  Target,
 } from 'lucide-react-native';
 import { ScrollView, View } from 'react-native';
 
@@ -49,20 +48,12 @@ export default function Profile() {
           </View>
         </Card>
 
-        <View className="flex-row gap-3">
-          <MetricCard
-            label={t.profile.plan}
-            value={t.profile.planValue}
-            icon={<ShieldCheck size={16} color={colors.muted} />}
-            tone="green"
-          />
-          <MetricCard
-            label={t.profile.goal}
-            value={t.profile.goalValue}
-            icon={<Target size={16} color={colors.muted} />}
-            tone="subtle"
-          />
-        </View>
+        <MetricCard
+          label={t.profile.plan}
+          value={t.profile.planValue}
+          icon={<ShieldCheck size={16} color={colors.muted} />}
+          tone="green"
+        />
 
         <SectionHeader title={t.profile.manage} />
         <Card className="gap-0 p-0">

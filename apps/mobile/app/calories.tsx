@@ -2,7 +2,7 @@ import type { CalorieDay, JuiceHistoryEntry } from '@freshpress/types';
 import { useRouter } from 'expo-router';
 import { Flame, PieChart } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, View } from 'react-native';
+import { Pressable, ScrollView, TouchableOpacity, View } from 'react-native';
 
 import { colors } from '@freshpress/design-system';
 
@@ -37,6 +37,8 @@ export default function Calories() {
       .then((r) => setHistory(r.history))
       .catch(() => setHistory([]));
   }, [user?.id]);
+
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
 
   const todayEntries = history.filter((entry) => entry.group === t.groups.today);
   const maxCal = Math.max(1, ...calories.days.map((day) => day.calories));
@@ -87,20 +89,49 @@ export default function Calories() {
 
         <Card className="gap-3">
           <SectionHeader title={t.calories.weekTrend} />
-          <View className="flex-row items-end justify-between gap-2">
-            {calories.days.map((day) => (
-              <View key={day.label} className="flex-1 items-center gap-1">
-                <View style={{ height: CHART_TRACK_H, width: '100%', justifyContent: 'flex-end' }}>
-                  <View
-                    className="w-full rounded-t-md bg-orange"
-                    style={{ height: Math.max(6, Math.round((day.calories / maxCal) * CHART_TRACK_H)) }}
-                  />
+          <View>
+            <View className="flex-row justify-between gap-2" style={{ marginBottom: 2 }}>
+              {calories.days.map((day) => (
+                <View key={day.label} className="flex-1 items-center" style={{ height: 16 }}>
+                  {selectedDay === day.label && day.calories > 0 && (
+                    <Text
+                      variant="caption"
+                      className="text-orange tracking-normal"
+                      style={{ fontSize: 9, fontWeight: '700' }}
+                    >
+                      {day.calories} kcal
+                    </Text>
+                  )}
                 </View>
-                <Text variant="caption" className="tracking-normal">
-                  {day.label}
-                </Text>
-              </View>
-            ))}
+              ))}
+            </View>
+            <View className="flex-row items-end justify-between gap-2">
+              {calories.days.map((day) => {
+                const isSelected = selectedDay === day.label;
+                return (
+                  <TouchableOpacity
+                    key={day.label}
+                    activeOpacity={0.75}
+                    onPress={() => setSelectedDay((cur) => (cur === day.label ? null : day.label))}
+                    className="flex-1 items-center gap-1"
+                  >
+                    <View style={{ height: CHART_TRACK_H, width: '100%', justifyContent: 'flex-end' }}>
+                      <View
+                        className={`w-full rounded-t-md ${isSelected ? 'bg-orange' : 'bg-orange/60'}`}
+                        style={{ height: Math.max(6, Math.round((day.calories / maxCal) * CHART_TRACK_H)) }}
+                      />
+                    </View>
+                    <Text
+                      variant="caption"
+                      className={`tracking-normal ${isSelected ? 'text-orange' : ''}`}
+                      style={isSelected ? { fontWeight: '700' } : undefined}
+                    >
+                      {day.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           </View>
         </Card>
 

@@ -1,6 +1,6 @@
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Tabs } from 'expo-router';
-import { Compass, Droplet, Package, Target, User } from 'lucide-react-native';
+import { Activity, Compass, Droplet, Package, User } from 'lucide-react-native';
 import { Platform, Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -71,7 +71,14 @@ function FreshTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
               >
                 {icon}
               </View>
-              <Text className="mt-0.5 text-[10px] font-bold text-amber">{label}</Text>
+              <Text
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                allowFontScaling={false}
+                className="mt-0.5 text-[10px] font-bold text-amber"
+              >
+                {label}
+              </Text>
             </Pressable>
           );
         }
@@ -92,6 +99,9 @@ function FreshTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
             >
               {icon}
               <Text
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                allowFontScaling={false}
                 className={`text-[10px] ${focused ? 'font-bold text-white' : 'font-semibold text-muted'}`}
               >
                 {label}
@@ -135,7 +145,7 @@ export default function TabsLayout() {
         name="goals"
         options={{
           title: t.tabs.goals,
-          tabBarIcon: ({ color }) => <Target size={20} color={color} />,
+          tabBarIcon: ({ color }) => <Activity size={20} color={color} />,
         }}
       />
       <Tabs.Screen

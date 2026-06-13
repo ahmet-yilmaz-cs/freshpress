@@ -68,6 +68,7 @@ export interface CreateRecipeInput {
   title: string;
   description: string;
   ingredientIds: string[];
+  amounts?: Record<string, number>;
 }
 
 /** A logged juice the user has made. */
