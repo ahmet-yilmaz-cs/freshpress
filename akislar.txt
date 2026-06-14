@@ -1,0 +1,68 @@
+FreshPress — Ekran Akışları
+===========================
+[ ] = Ekran (dikdörtgen)
+( ) = Buton / Eylem (oval)
+ →  = Geçiş yönü
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. GİRİŞ AKIŞI
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[Giriş]
+  ├── (başla)             → [Hesap Oluştur]  → [Makine]
+  ├── (giriş yap)         → [Giriş Yap]      → [Makine]
+  └── (apple ile devam et)                   → [Makine]
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2. KEŞFET AKIŞI
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[Keşfet]
+  └── (herhangi bir tarif) → [Tarif İzleme Ekranı]
+                                └── (sıkmaya başla) → [Sıkılıyor]
+                                                          └── süre bitince → [Hazır Ekranı]
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3. MAKİNE AKIŞI
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[Stok]
+  └── (stoku düzenle) → [Stok Ekle]
+
+[Keşfet]
+  └── (tarifler) → [Tarifler]
+
+[Makine]
+  ├── (cihaz bilgileri)  → [Cihaz Bilgisi]
+  └── (hızlı program)   → [Sıkılıyor]
+                              ├── (iptal)    → [Makine]
+                              ├── (bitir)    → [Sıkım Bitti]
+                              └── süre bitti → [Sıkım Bitti]
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+4. AKTİVİTE AKIŞI
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[Aktivite]
+  ├── (kalori detayı)          → [Kaloriler]
+  │                                 └── (tarif) → [Tarif İzleme Ekranı]
+  └── (son sıkım / tümünü gör) → [Geçmiş]
+                                      └── (tarif) → [Tarif İzleme Ekranı]
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+5. PROFİL AKIŞI
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[Profil]
+  ├── (hesap)              → [Hesap]
+  ├── (makine bağlantısı)  → [Cihaz Eşleme]
+  │                              └── (cihaz detayları) → [Cihaz Bilgisi]
+  ├── (bildirimler)        → [Bildirimler]
+  └── (ayarlar)            → [Ayarlar]
+                                 ├── (yardım)     → [Yardım]
+                                 └── (çıkış yap)  → [Giriş]

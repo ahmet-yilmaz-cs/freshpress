@@ -10,8 +10,8 @@ import { api } from '../src/api/client';
 import { useAuth } from '../src/auth/AuthContext';
 import { JuiceVisual, SectionHeader } from '../src/components/FreshPressPrimitives';
 import { Reveal } from '../src/components/Reveal';
-import { BackBar, Badge, Card, Screen, Text } from '../src/components/ui';
-import { labels, t, upperTr } from '../src/i18n/strings';
+import { BackBar, Card, Screen, Text } from '../src/components/ui';
+import { t } from '../src/i18n/strings';
 
 export default function History() {
   const router = useRouter();
@@ -86,10 +86,6 @@ export default function History() {
                       {entry.ingredients.join(', ')}
                     </Text>
                   </View>
-                  <Badge
-                    label={upperTr(labels.quality[entry.quality] ?? entry.quality)}
-                    tone={entry.quality === 'excellent' ? 'fresh' : 'amber'}
-                  />
                 </Card>
               </Pressable>
             ))}

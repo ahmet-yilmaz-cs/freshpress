@@ -24,6 +24,7 @@ import { getStock, helpTopics, recipes } from './shared';
 
 export {
   addCustomRecipe,
+  deleteCustomRecipe,
   getStock,
   helpTopics,
   juicingSession,
@@ -145,6 +146,28 @@ export function getDeviceDetails(userId: string): DeviceDetails {
 
 export function getHistory(userId: string): JuiceHistoryEntry[] {
   return dataFor(userId).history;
+}
+
+export function addJuiceHistory(
+  userId: string,
+  entry: Omit<JuiceHistoryEntry, 'id' | 'group'>,
+): JuiceHistoryEntry {
+  const data = dataFor(userId);
+  const newEntry: JuiceHistoryEntry = {
+    ...entry,
+    id: `jh-${Date.now()}`,
+    group: 'BUGÜN',
+  };
+  data.history.unshift(newEntry);
+  if (entry.calories > 0) {
+    data.calories.today += entry.calories;
+    // JS: 0=Sun,1=Mon…6=Sat → Turkish week: 0=Pzt(Mon)…6=Paz(Sun)
+    const jsDay = new Date().getDay();
+    const trIdx = jsDay === 0 ? 6 : jsDay - 1;
+    const dayEntry = data.calories.days[trIdx];
+    if (dayEntry) dayEntry.calories += entry.calories;
+  }
+  return newEntry;
 }
 
 export function getGoals(userId: string): WeeklyGoals {

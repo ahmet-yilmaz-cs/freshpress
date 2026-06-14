@@ -1,7 +1,7 @@
 import type { CalorieDay, JuiceHistoryEntry, WeeklyGoals } from '@freshpress/types';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { Flame, TrendingUp } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Pressable, ScrollView, TouchableOpacity, View } from 'react-native';
 
 import { colors } from '@freshpress/design-system';
@@ -11,8 +11,8 @@ import { useAuth } from '../../src/auth/AuthContext';
 import { AppHeader } from '../../src/components/AppHeader';
 import { JuiceVisual, MetricCard, SectionHeader } from '../../src/components/FreshPressPrimitives';
 import { Reveal } from '../../src/components/Reveal';
-import { Badge, Card, Screen, Text } from '../../src/components/ui';
-import { labels, t, upperTr } from '../../src/i18n/strings';
+import { Card, Screen, Text } from '../../src/components/ui';
+import { t } from '../../src/i18n/strings';
 import { appRoute } from '../../src/lib/route';
 
 /** Fixed pixel height of the weekly-calorie bar track (see chart note below). */
@@ -28,21 +28,14 @@ export default function Goals() {
   });
   const [history, setHistory] = useState<JuiceHistoryEntry[]>([]);
 
-  useEffect(() => {
-    if (!user) return;
-    api
-      .goals(user.id)
-      .then((r) => setGoals(r.goals))
-      .catch(() => setGoals(null));
-    api
-      .calories(user.id)
-      .then(setCalories)
-      .catch(() => setCalories({ today: 0, days: [] }));
-    api
-      .history(user.id)
-      .then((r) => setHistory(r.history))
-      .catch(() => setHistory([]));
-  }, [user?.id]);
+  useFocusEffect(
+    useCallback(() => {
+      if (!user) return;
+      api.goals(user.id).then((r) => setGoals(r.goals)).catch(() => setGoals(null));
+      api.calories(user.id).then(setCalories).catch(() => setCalories({ today: 0, days: [] }));
+      api.history(user.id).then((r) => setHistory(r.history)).catch(() => setHistory([]));
+    }, [user?.id]),
+  );
 
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
 
@@ -166,7 +159,7 @@ export default function Goals() {
           onAction={() => router.push(appRoute('/history'))}
         />
         <View className="gap-3">
-          {history.slice(0, 3).map((entry) => (
+          {history.slice(0, 2).map((entry) => (
             <Pressable
               key={entry.id}
               onPress={() =>
@@ -189,10 +182,6 @@ export default function Goals() {
                     {entry.group} · {entry.volumeMl} {t.common.ml} · {entry.calories} {t.common.kcal}
                   </Text>
                 </View>
-                <Badge
-                  label={upperTr(labels.quality[entry.quality] ?? entry.quality)}
-                  tone={entry.quality === 'excellent' ? 'fresh' : 'amber'}
-                />
               </Card>
             </Pressable>
           ))}

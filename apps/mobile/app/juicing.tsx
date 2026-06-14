@@ -32,10 +32,13 @@ export default function Juicing() {
   const [pct, setPct] = useState(0);
   const [paused, setPaused] = useState(false);
   const pausedRef = useRef(false);
+  const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [session, setSession] = useState<JuicingSession | null>(null);
   const [speed, setSpeed] = useState<ExtractionSpeed>('medium');
   const [recipeIngredients, setRecipeIngredients] = useState<JuicingIngredient[] | null>(null);
   const [recipeBenefits, setRecipeBenefits] = useState<string[] | null>(null);
+  const [recipeCalories, setRecipeCalories] = useState<number>(0);
+  const [recipeDurationSec, setRecipeDurationSec] = useState<number>(90);
 
   useEffect(() => {
     api
@@ -65,32 +68,37 @@ export default function Juicing() {
         });
         setRecipeIngredients(mapped);
         setRecipeBenefits(recipe.benefits);
+        setRecipeCalories(recipe.calories);
+        setRecipeDurationSec(recipe.durationSec);
       });
     }
   }, [user?.id, recipeId]);
 
   useEffect(() => {
-    const tick = setInterval(() => {
+    tickRef.current = setInterval(() => {
       if (pausedRef.current) return;
-      setPct((current) => {
-        const next = Math.min(100, current + 1);
-        if (next >= 100) {
-          clearInterval(tick);
-          router.replace(`/ready?title=${encodeURIComponent(title ?? t.juicing.fallbackTitleCap)}`);
-        }
-        return next;
-      });
+      setPct((current) => Math.min(100, current + 1));
     }, TICK_MS);
-    return () => clearInterval(tick);
-  }, [router, title]);
+    return () => {
+      if (tickRef.current) clearInterval(tickRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (pct < 100) return;
+    if (tickRef.current) clearInterval(tickRef.current);
+    router.replace(
+      `/ready?title=${encodeURIComponent(title ?? t.juicing.fallbackTitleCap)}&recipeId=${encodeURIComponent(recipeId ?? '')}&calories=${recipeCalories}&durationSec=${recipeDurationSec}&ingredients=${encodeURIComponent((recipeIngredients ?? []).map((i) => i.name).join(','))}`,
+    );
+  }, [pct]);
 
   function togglePause() {
     pausedRef.current = !pausedRef.current;
     setPaused(pausedRef.current);
   }
 
-  const ingredients = recipeIngredients ?? session?.ingredients ?? [];
-  const benefits = recipeBenefits ?? session?.benefits ?? [];
+  const ingredients = recipeIngredients ?? [];
+  const benefits = recipeBenefits ?? [];
   const window = ingredients.length ? 100 / ingredients.length : 100;
   const rpm = session?.rpmBySpeed[speed] ?? 80;
 
@@ -169,7 +177,13 @@ export default function Juicing() {
           <Text variant="eyebrow" className="text-ink">
             {upperTr(t.juicing.currentIngredients)}
           </Text>
-          {ingredients.map((ingredient, index) => {
+          {!recipeId ? (
+            <Card className="items-center py-5">
+              <Text variant="body" className="text-muted">
+                {t.juicing.noRecipeSelected}
+              </Text>
+            </Card>
+          ) : ingredients.map((ingredient, index) => {
             const start = index * window;
             const progress = clamp((pct - start) / window, 0, 1);
             const done = progress >= 1;
@@ -224,7 +238,9 @@ export default function Juicing() {
           title={t.juicing.finishNow}
           variant="secondary"
           onPress={() =>
-            router.replace(`/ready?title=${encodeURIComponent(title ?? t.juicing.fallbackTitleCap)}`)
+            router.replace(
+              `/ready?title=${encodeURIComponent(title ?? t.juicing.fallbackTitleCap)}&recipeId=${encodeURIComponent(recipeId ?? '')}&calories=${recipeCalories}&durationSec=${recipeDurationSec}&ingredients=${encodeURIComponent((recipeIngredients ?? []).map((i) => i.name).join(','))}`,
+            )
           }
         />
         </ScrollView>

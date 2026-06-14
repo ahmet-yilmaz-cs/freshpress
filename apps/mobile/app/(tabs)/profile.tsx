@@ -1,8 +1,6 @@
 import { useRouter } from 'expo-router';
 import {
   Bell,
-  CircleHelp,
-  LogOut,
   Settings,
   ShieldCheck,
   Smartphone,
@@ -15,12 +13,12 @@ import { useAuth } from '../../src/auth/AuthContext';
 import { AppHeader } from '../../src/components/AppHeader';
 import { ListRow, MetricCard, SectionHeader } from '../../src/components/FreshPressPrimitives';
 import { Reveal } from '../../src/components/Reveal';
-import { Button, Card, Screen, Text } from '../../src/components/ui';
+import { Card, Screen, Text } from '../../src/components/ui';
 import { t } from '../../src/i18n/strings';
 import { appRoute } from '../../src/lib/route';
 
 export default function Profile() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
 
   return (
@@ -80,23 +78,10 @@ export default function Profile() {
             subtitle={t.profile.settingsSub}
             icon={<Settings size={20} color={colors.amber} />}
             onPress={() => router.push('/settings')}
-          />
-          <ListRow
-            title={t.profile.help}
-            subtitle={t.profile.helpSub}
-            icon={<CircleHelp size={20} color={colors.amber} />}
-            onPress={() => router.push(appRoute('/help'))}
             last
           />
         </Card>
 
-        <Button title={t.profile.logout} variant="secondary" onPress={logout} className="mt-2" />
-        <View className="flex-row items-center justify-center gap-2">
-          <LogOut size={14} color={colors.muted} />
-          <Text variant="caption" className="text-center tracking-normal">
-            {t.profile.footer}
-          </Text>
-        </View>
         </ScrollView>
       </Reveal>
     </Screen>

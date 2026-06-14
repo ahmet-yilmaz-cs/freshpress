@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { Bell, CircleHelp, Database, Globe, Moon, ShieldCheck } from 'lucide-react-native';
+import { Bell, CircleHelp, Database, Globe, Moon } from 'lucide-react-native';
 import type { ReactNode } from 'react';
 import { Pressable, ScrollView, Switch, View } from 'react-native';
 
@@ -64,23 +64,6 @@ export default function Settings() {
           </Text>
         </View>
 
-        <SectionHeader title={t.settings.accountSection} />
-        <Card className="gap-0 p-0">
-          <ListRow
-            title={t.settings.accountDetails}
-            subtitle={t.settings.accountDetailsSub}
-            icon={<ShieldCheck size={20} color={colors.amber} />}
-            onPress={() => router.push(appRoute('/account'))}
-          />
-          <ListRow
-            title={t.settings.help}
-            subtitle={t.settings.helpSub}
-            icon={<CircleHelp size={20} color={colors.amber} />}
-            onPress={() => router.push(appRoute('/help'))}
-            last
-          />
-        </Card>
-
         <SectionHeader title={t.settings.preferences} />
         <Card className="gap-0 p-0">
           {toggles.map((item, index) => (
@@ -137,6 +120,17 @@ export default function Settings() {
               )}
             </View>
           ))}
+        </Card>
+
+        <SectionHeader title="Yardım" />
+        <Card className="gap-0 p-0">
+          <ListRow
+            title={t.settings.help}
+            subtitle={t.settings.helpSub}
+            icon={<CircleHelp size={20} color={colors.amber} />}
+            onPress={() => router.push(appRoute('/help'))}
+            last
+          />
         </Card>
 
         <Button title={t.settings.logout} variant="secondary" onPress={logout} className="mt-2" />

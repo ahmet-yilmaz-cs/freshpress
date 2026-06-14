@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { HeartPulse, Plus, Search, ShieldCheck, Sun, Zap } from 'lucide-react-native';
 import { useCallback, useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Dimensions, Image, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 
 import { colors } from '@freshpress/design-system';
 
@@ -25,6 +25,9 @@ import { alpha, toneFor } from '../../src/lib/visuals';
  * prototype's category chips (every category had its own glyph and colour).
  * Colours stay on design tokens — no hardcoded hex in the screen.
  */
+const CARD_WIDTH = Dimensions.get('window').width * 0.72;
+const CARD_HEIGHT = 189;
+
 const CATEGORY_META = [
   { label: t.explore.categories.energy, Icon: Zap, color: colors.orange, bg: 'bg-orange/10' },
   { label: t.explore.categories.immunity, Icon: ShieldCheck, color: colors.greenInk, bg: 'bg-green/30' },
@@ -144,20 +147,32 @@ export default function Explore() {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ gap: 12, paddingRight: 4 }}
         >
-          {recommendations.map((item) => (
-            <RecommendationCard
-              key={item.id}
-              recommendation={item}
-              onPress={() => item.recipeId && router.push(`/recipe/${item.recipeId}`)}
-            />
-          ))}
+          {recommendations.map((item) => {
+            const recipe = recipes.find((r) => r.id === item.recipeId);
+            return (
+              <RecommendationCard
+                key={item.id}
+                recommendation={item}
+                recipeName={recipe?.title}
+                onPress={() => item.recipeId && router.push(`/recipe/${item.recipeId}`)}
+              />
+            );
+          })}
         </ScrollView>
 
-        <SectionHeader title={t.explore.recipes} />
-        <View className="gap-3">
+        <SectionHeader
+          title={t.explore.recipes}
+          action={t.explore.viewAll}
+          onAction={() => router.push('/all-recipes?type=catalog')}
+        />
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ gap: 12, paddingRight: 4 }}
+        >
           {catalogRecipes.length ? (
             catalogRecipes.map((recipe) => (
-              <RecipeCard
+              <RecipeCardCompact
                 key={recipe.id}
                 recipe={recipe}
                 onPress={() => router.push(`/recipe/${recipe.id}`)}
@@ -168,13 +183,17 @@ export default function Explore() {
               {t.explore.noResults}
             </Text>
           )}
-        </View>
+        </ScrollView>
 
-        <SectionHeader title={t.explore.myRecipes} action={t.common.add} onAction={() => router.push('/add-recipe')} />
+        <SectionHeader
+          title={t.explore.myRecipes}
+          action={t.common.add}
+          onAction={() => router.push('/add-recipe')}
+        />
         {customRecipes.length ? (
           <View className="gap-3">
             {customRecipes.map((recipe) => (
-              <RecipeCard
+              <MyRecipeCard
                 key={recipe.id}
                 recipe={recipe}
                 onPress={() => router.push(`/recipe/${recipe.id}`)}
@@ -201,22 +220,22 @@ export default function Explore() {
   );
 }
 
-function RecipeCard({ recipe, onPress }: { recipe: Recipe; onPress: () => void }) {
-  const tn = toneFor(recipe.tone);
+function RecipeCardCompact({ recipe, onPress }: { recipe: Recipe; onPress: () => void }) {
   return (
     <Pressable onPress={onPress} className="active:opacity-80">
-      <Card className="flex-row items-center gap-4 p-3">
-        <FoodImage source={recipeImage(recipe.id, recipe.tone)} radius={14} style={{ width: 84, height: 84 }} />
-        <View className="min-w-0 flex-1 gap-1">
-          <Text variant="h3" className="text-[18px] leading-[24px]" numberOfLines={1}>
+      <Card style={{ width: CARD_WIDTH, height: CARD_HEIGHT }} className="overflow-hidden p-0">
+        <Image
+          source={recipeImage(recipe.id, recipe.tone)}
+          resizeMode="cover"
+          style={StyleSheet.absoluteFill}
+        />
+        <LinearGradient
+          colors={['transparent', alpha(colors.ink, 0.82)]}
+          style={[StyleSheet.absoluteFill, { top: 90 }]}
+        />
+        <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }} className="px-4 pb-4">
+          <Text variant="h3" className="text-[17px] leading-[24px] text-white" numberOfLines={2}>
             {recipe.title}
-          </Text>
-          <Text variant="body" className="text-[14px] leading-[20px]" numberOfLines={2}>
-            {recipe.description}
-          </Text>
-          <Text variant="eyebrow" className={tn.text}>
-            {recipe.calories} {t.common.kcal.toUpperCase()} · {formatDuration(recipe.durationSec)}{' '}
-            {t.common.min.toUpperCase()}
           </Text>
         </View>
       </Card>
@@ -224,32 +243,52 @@ function RecipeCard({ recipe, onPress }: { recipe: Recipe; onPress: () => void }
   );
 }
 
-/** Fixed-size carousel card — identical footprint regardless of title/subtitle length. */
+function MyRecipeCard({ recipe, onPress }: { recipe: Recipe; onPress: () => void }) {
+  const tn = toneFor(recipe.tone);
+  return (
+    <Pressable onPress={onPress} className="active:opacity-80">
+      <Card className="flex-row items-center gap-4 p-3">
+        <FoodImage source={recipeImage(recipe.id, recipe.tone)} radius={12} style={{ width: 72, height: 72 }} />
+        <View className="min-w-0 flex-1 gap-1">
+          <Text variant="h3" className="text-[17px] leading-[24px]" numberOfLines={1}>
+            {recipe.title}
+          </Text>
+          <Text variant="body" className="text-[13px] leading-[18px]" numberOfLines={1}>
+            {recipe.description}
+          </Text>
+          <Text variant="eyebrow" className={tn.text}>
+            {recipe.calories} {t.common.kcal.toUpperCase()} · {formatDuration(recipe.durationSec)} {t.common.min.toUpperCase()}
+          </Text>
+        </View>
+      </Card>
+    </Pressable>
+  );
+}
+
 function RecommendationCard({
   recommendation,
+  recipeName,
   onPress,
 }: {
   recommendation: Recommendation;
+  recipeName?: string;
   onPress: () => void;
 }) {
   return (
     <Pressable onPress={onPress} className="active:opacity-80">
-      {/* Image-led card: a full-width photo banner over the copy reads as editorial, not template. */}
-      <Card style={{ width: 252, height: 250 }} className="overflow-hidden p-0">
-        <FoodImage
+      <Card style={{ width: CARD_WIDTH, height: CARD_HEIGHT }} className="overflow-hidden p-0">
+        <Image
           source={recipeImage(recommendation.recipeId, recommendation.tone)}
-          radius={0}
-          style={{ height: 134 }}
+          resizeMode="cover"
+          style={StyleSheet.absoluteFill}
         />
-        <View className="flex-1 gap-1 p-4">
-          {/* Reserve two lines for the title so subtitles always start at the same baseline. */}
-          <View style={{ height: 48 }}>
-            <Text variant="h3" className="text-[18px] leading-[24px]" numberOfLines={2}>
-              {recommendation.title}
-            </Text>
-          </View>
-          <Text variant="body" className="text-[14px] leading-[20px]" numberOfLines={2}>
-            {recommendation.subtitle}
+        <LinearGradient
+          colors={['transparent', alpha(colors.ink, 0.82)]}
+          style={[StyleSheet.absoluteFill, { top: 90 }]}
+        />
+        <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }} className="px-4 pb-4">
+          <Text variant="h3" className="text-[17px] leading-[24px] text-white" numberOfLines={2}>
+            {recipeName ?? recommendation.title}
           </Text>
         </View>
       </Card>
