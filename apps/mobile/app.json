@@ -2,6 +2,7 @@
   "expo": {
     "name": "FreshPress",
     "slug": "freshpress",
+    "owner": "devredin",
     "version": "1.0.0",
     "orientation": "portrait",
     "scheme": "freshpress",
@@ -41,7 +42,10 @@
       "tsconfigPaths": true
     },
     "extra": {
-      "apiUrl": "http://localhost:5050"
+      "apiUrl": "http://localhost:5050",
+      "eas": {
+        "projectId": "58b4c9e1-6bd5-4264-983d-1f55032b372f"
+      }
     }
   }
 }
