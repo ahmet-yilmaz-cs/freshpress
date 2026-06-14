@@ -7,18 +7,21 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
+      "node": "22.22.2",
       "env": {
         "EXPO_PUBLIC_API_URL": "http://localhost:5050"
       }
     },
     "preview": {
       "distribution": "internal",
+      "node": "22.22.2",
       "env": {
         "EXPO_PUBLIC_API_URL": "https://api.freshpress.app"
       }
     },
     "production": {
       "autoIncrement": true,
+      "node": "22.22.2",
       "env": {
         "EXPO_PUBLIC_API_URL": "https://api.freshpress.app"
       }
